@@ -95,53 +95,44 @@
     background: var(--card);
     border: 1px solid var(--line);
     border-radius: 14px;
-    padding: 16px 16px 16px;
     margin-bottom: 26px;
+    overflow: hidden;
   }
-  .input-row{
+  .add-trigger{
+    width: 100%;
     display: flex;
     align-items: center;
-    gap: 10px;
-  }
-  .add-box input[type=text]{
-    flex: 1;
-    min-width: 0;
-    border: none;
-    border-bottom: 1px solid var(--line);
-    padding: 10px 2px 10px;
-    font-size: 1.02rem;
-    font-family: 'Noto Kufi Arabic', sans-serif;
-    font-weight: 500;
+    justify-content: space-between;
     background: transparent;
-    color: var(--ink);
-  }
-  .add-box input[type=text]::placeholder{ color: var(--ink-dim); }
-  .add-box input[type=text]:focus{
-    outline: none;
-    border-bottom-color: var(--gold);
-  }
-
-  .plus-btn{
-    flex-shrink: 0;
-    width: 38px;
-    height: 38px;
-    border-radius: 10px;
-    border: 1px solid var(--line);
-    background: var(--bg-soft);
-    color: var(--ink-soft);
-    font-size: 1.3rem;
-    line-height: 1;
-    font-family: inherit;
+    border: none;
+    padding: 16px 18px;
     cursor: pointer;
+    transition: background .15s ease;
+    flex-direction: row-reverse;
+  }
+  .add-trigger:hover{ background: var(--card-hover); }
+  .add-trigger-label{
+    font-family: 'Noto Kufi Arabic', sans-serif;
+    font-size: 0.98rem;
+    font-weight: 600;
+    color: var(--gold);
+  }
+  .plus-circle{
+    flex-shrink: 0;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    border: 1.5px solid var(--gold);
+    color: var(--gold);
+    font-size: 1.1rem;
+    line-height: 1;
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: all .15s ease;
+    transition: all .2s ease;
   }
-  .plus-btn:hover{ border-color: var(--gold); color: var(--gold); }
-  .plus-btn.open{
+  .add-trigger.open .plus-circle{
     background: var(--gold);
-    border-color: var(--gold);
     color: #1a1408;
     transform: rotate(45deg);
   }
@@ -149,16 +140,35 @@
   .options-panel{
     max-height: 0;
     overflow: hidden;
-    transition: max-height .25s ease, opacity .2s ease, margin-top .25s ease;
+    transition: max-height .25s ease, opacity .2s ease;
     opacity: 0;
-    margin-top: 0;
   }
   .options-panel.open{
-    max-height: 320px;
+    max-height: 420px;
     opacity: 1;
-    margin-top: 16px;
+  }
+  .options-panel-inner{
+    padding: 0 18px 18px;
   }
   .options-panel .add-btn{ margin-top: 6px; }
+
+  .add-box input[type=text]{
+    width: 100%;
+    border: none;
+    border-bottom: 1px solid var(--line);
+    padding: 10px 2px 12px;
+    font-size: 1.02rem;
+    font-family: 'Noto Kufi Arabic', sans-serif;
+    font-weight: 500;
+    background: transparent;
+    color: var(--ink);
+    margin-bottom: 16px;
+  }
+  .add-box input[type=text]::placeholder{ color: var(--ink-dim); }
+  .add-box input[type=text]:focus{
+    outline: none;
+    border-bottom-color: var(--gold);
+  }
 
   .row{
     display:flex;
@@ -468,32 +478,36 @@
     <div class="count" id="taskCount"></div>
   </header>
 
-  <div class="add-box">
-    <div class="input-row">
-      <input type="text" id="taskInput" placeholder="اكتب مهمة جديدة..." />
-      <button class="plus-btn" id="optionsToggle" type="button" aria-label="خيارات المهمة">+</button>
-    </div>
+  <div class="add-box" id="addBox">
+    <button class="add-trigger" id="optionsToggle" type="button">
+      <span class="plus-circle" id="plusCircle">+</span>
+      <span class="add-trigger-label">إضافة مهمة جديدة</span>
+    </button>
 
     <div class="options-panel" id="optionsPanel">
-      <div class="row">
-        <div class="seg">
-          <div class="seg-label">التصنيف</div>
-          <button class="chip active" data-cat="دوام">الدوام</button>
-          <button class="chip" data-cat="بيت">البيت</button>
-          <button class="chip" data-cat="شخصي">شخصي</button>
-        </div>
-      </div>
+      <div class="options-panel-inner">
+        <input type="text" id="taskInput" placeholder="اكتب مهمة جديدة..." />
 
-      <div class="row">
-        <div class="seg">
-          <div class="seg-label">الأهمية</div>
-          <button class="chip active" data-pri="عالية">عالية</button>
-          <button class="chip" data-pri="متوسطة">متوسطة</button>
-          <button class="chip" data-pri="عادية">عادية</button>
+        <div class="row">
+          <div class="seg">
+            <div class="seg-label">التصنيف</div>
+            <button class="chip active" data-cat="دوام">الدوام</button>
+            <button class="chip" data-cat="بيت">البيت</button>
+            <button class="chip" data-cat="شخصي">شخصي</button>
+          </div>
         </div>
-      </div>
 
-      <button class="add-btn" id="addBtn">إضافة المهمة</button>
+        <div class="row">
+          <div class="seg">
+            <div class="seg-label">الأهمية</div>
+            <button class="chip active" data-pri="عالية">عالية</button>
+            <button class="chip" data-pri="متوسطة">متوسطة</button>
+            <button class="chip" data-pri="عادية">عادية</button>
+          </div>
+        </div>
+
+        <button class="add-btn" id="addBtn">إضافة المهمة</button>
+      </div>
     </div>
   </div>
 
