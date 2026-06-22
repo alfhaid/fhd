@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>قائمة المهام</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Aref+Ruqaa:wght@400;700&family=Noto+Kufi+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #15181e;
+    --bg-soft: #1b1f27;
+    --card: #1e222b;
+    --card-hover: #242935;
+    --line: #2c313d;
+    --ink: #e9e6df;
+    --ink-soft: #8b8f9c;
+    --ink-dim: #5d616d;
+    --gold: #c9a05c;
+
+    --cat-work: #5b9bd5;
+    --cat-home: #6fae7c;
+    --cat-personal: #b08ad4;
+    --cat-other: #9b9690;
+
+    --pri-high: #e0665b;
+    --pri-high-bg: rgba(224, 102, 91, 0.14);
+    --pri-mid: #e0a050;
+    --pri-mid-bg: rgba(224, 160, 80, 0.14);
+    --pri-low: #8b8f9c;
+    --pri-low-bg: rgba(139, 143, 156, 0.14);
+  }
+
+  * { box-sizing: border-box; }
+  html,body{
+    margin:0; padding:0;
+    background: var(--bg);
+    background-image:
+      radial-gradient(circle at 10% 0%, rgba(201,160,92,0.05), transparent 40%),
+      radial-gradient(circle at 90% 100%, rgba(91,155,213,0.04), transparent 40%);
+    color: var(--ink);
+    font-family: 'Noto Kufi Arabic', 'Tahoma', sans-serif;
+    min-height: 100vh;
+  }
+
+  .wrap{
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 36px 20px 90px;
+  }
+
+  header{
+    display:flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    margin-bottom: 28px;
+    padding-bottom: 18px;
+    border-bottom: 1px solid var(--line);
+    position: relative;
+  }
+  header::after{
+    content: '';
+    position: absolute;
+    bottom: -1px;
+    right: 0;
+    width: 64px;
+    height: 2px;
+    background: var(--gold);
+  }
+  header h1{
+    font-family: 'Aref Ruqaa', serif;
+    font-weight: 700;
+    font-size: 2.1rem;
+    margin: 0;
+    color: var(--ink);
+    letter-spacing: 0.5px;
+  }
+  header .count{
+    font-size: 0.8rem;
+    color: var(--ink-dim);
+    font-weight: 500;
+    padding-bottom: 4px;
+  }
+
+  .add-box{
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 16px 16px 16px;
+    margin-bottom: 26px;
+  }
+  .input-row{
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .add-box input[type=text]{
+    flex: 1;
+    min-width: 0;
+    border: none;
+    border-bottom: 1px solid var(--line);
+    padding: 10px 2px 10px;
+    font-size: 1.02rem;
+    font-family: 'Noto Kufi Arabic', sans-serif;
+    font-weight: 500;
+    background: transparent;
+    color: var(--ink);
+  }
+  .add-box input[type=text]::placeholder{ color: var(--ink-dim); }
+  .add-box input[type=text]:focus{
+    outline: none;
+    border-bottom-color: var(--gold);
+  }
+
+  .plus-btn{
+    flex-shrink: 0;
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
+    border: 1px solid var(--line);
+    background: var(--bg-soft);
+    color: var(--ink-soft);
+    font-size: 1.3rem;
+    line-height: 1;
+    font-family: inherit;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all .15s ease;
+  }
+  .plus-btn:hover{ border-color: var(--gold); color: var(--gold); }
+  .plus-btn.open{
+    background: var(--gold);
+    border-color: var(--gold);
+    color: #1a1408;
+    transform: rotate(45deg);
+  }
+
+  .options-panel{
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height .25s ease, opacity .2s ease, margin-top .25s ease;
+    opacity: 0;
+    margin-top: 0;
+  }
+  .options-panel.open{
+    max-height: 320px;
+    opacity: 1;
+    margin-top: 16px;
+  }
+  .options-panel .add-btn{ margin-top: 6px; }
+
+  .row{
+    display:flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 14px;
+  }
+  .seg{
+    display:flex;
+    gap: 6px;
+    flex: 1;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+  .seg-label{
+    font-size: 0.7rem;
+    color: var(--ink-dim);
+    width: 100%;
+    margin-bottom: 6px;
+    letter-spacing: 0.3px;
+  }
+  .chip{
+    border: 1px solid var(--line);
+    background: var(--bg-soft);
+    color: var(--ink-soft);
+    font-size: 0.82rem;
+    font-family: inherit;
+    font-weight: 500;
+    padding: 7px 14px;
+    border-radius: 8px;
+    cursor: pointer;
+    user-select: none;
+    transition: all .15s ease;
+  }
+  .chip:hover{ border-color: var(--ink-dim); }
+
+  .chip.active[data-cat="دوام"]{ background: rgba(91,155,213,0.14); border-color: var(--cat-work); color: var(--cat-work); }
+  .chip.active[data-cat="بيت"]{ background: rgba(111,174,124,0.14); border-color: var(--cat-home); color: var(--cat-home); }
+  .chip.active[data-cat="شخصي"]{ background: rgba(176,138,212,0.14); border-color: var(--cat-personal); color: var(--cat-personal); }
+  .chip.active[data-cat="أخرى"]{ background: rgba(155,150,144,0.14); border-color: var(--cat-other); color: var(--cat-other); }
+
+  .chip.active[data-pri="عالية"]{ background: var(--pri-high-bg); border-color: var(--pri-high); color: var(--pri-high); }
+  .chip.active[data-pri="متوسطة"]{ background: var(--pri-mid-bg); border-color: var(--pri-mid); color: var(--pri-mid); }
+  .chip.active[data-pri="عادية"]{ background: var(--pri-low-bg); border-color: var(--pri-low); color: var(--pri-low); }
+
+  .add-btn{
+    width: 100%;
+    background: var(--gold);
+    color: #1a1408;
+    border: none;
+    border-radius: 9px;
+    padding: 12px;
+    font-size: 0.95rem;
+    font-weight: 700;
+    font-family: inherit;
+    cursor: pointer;
+    transition: filter .15s ease;
+    margin-top: 4px;
+  }
+  .add-btn:hover{ filter: brightness(1.1); }
+
+  .filters{
+    display:flex;
+    gap: 8px;
+    margin-bottom: 22px;
+    flex-wrap: wrap;
+  }
+  .filter-chip{
+    border: 1px solid var(--line);
+    background: var(--card);
+    color: var(--ink-soft);
+    font-size: 0.82rem;
+    font-family: inherit;
+    font-weight: 600;
+    padding: 8px 14px;
+    border-radius: 10px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all .15s ease;
+    border-right: 3px solid transparent;
+  }
+  .filter-chip[data-filter="دوام"]{ border-right-color: var(--cat-work); }
+  .filter-chip[data-filter="بيت"]{ border-right-color: var(--cat-home); }
+  .filter-chip[data-filter="شخصي"]{ border-right-color: var(--cat-personal); }
+  .filter-chip[data-filter="أخرى"]{ border-right-color: var(--cat-other); }
+
+  .filter-chip.active{
+    background: var(--card-hover);
+    color: var(--ink);
+  }
+
+  .fc-counts{
+    display:inline-flex;
+    gap: 4px;
+  }
+  .fc-badge{
+    font-size: 0.68rem;
+    font-weight: 700;
+    min-width: 18px;
+    height: 18px;
+    padding: 0 4px;
+    border-radius: 5px;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    font-family: 'Noto Kufi Arabic', sans-serif;
+  }
+  .fc-badge.pri-عالية{ background: var(--pri-high-bg); color: var(--pri-high); }
+  .fc-badge.pri-متوسطة{ background: var(--pri-mid-bg); color: var(--pri-mid); }
+  .fc-badge.pri-عادية{ background: var(--pri-low-bg); color: var(--ink-soft); }
+
+  .group{ margin-bottom: 26px; }
+  .group-title{
+    font-size: 0.78rem;
+    color: var(--ink-dim);
+    margin-bottom: 10px;
+    padding-right: 2px;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+  }
+
+  .task{
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-right: 3px solid var(--line);
+    border-radius: 11px;
+    padding: 13px 16px;
+    margin-bottom: 9px;
+    display:flex;
+    align-items: center;
+    gap: 13px;
+    transition: opacity .2s ease, background .15s ease;
+  }
+  .task:hover{ background: var(--card-hover); }
+  .task.done{ opacity: 0.42; }
+  .task.done .task-text{ text-decoration: line-through; }
+
+  .task[data-pri="عالية"]{ border-right-color: var(--pri-high); }
+  .task[data-pri="متوسطة"]{ border-right-color: var(--pri-mid); }
+  .task[data-pri="عادية"]{ border-right-color: var(--ink-dim); }
+
+  .checkbox{
+    width: 23px;
+    height: 23px;
+    border: 2px solid var(--line);
+    border-radius: 7px;
+    cursor: pointer;
+    flex-shrink: 0;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    background: transparent;
+    transition: all .15s ease;
+    color: transparent;
+  }
+  .checkbox:hover{ border-color: var(--gold); }
+  .checkbox.checked{
+    background: var(--gold);
+    border-color: var(--gold);
+    color: #1a1408;
+    font-size: 0.85rem;
+    font-weight: 700;
+  }
+
+  .task-body{ flex: 1; min-width: 0; }
+  .task-text{
+    font-size: 0.98rem;
+    font-weight: 500;
+    margin-bottom: 6px;
+    word-break: break-word;
+    color: var(--ink);
+  }
+  .task-tags{
+    display:flex;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+  .tag{
+    font-size: 0.68rem;
+    padding: 2px 10px;
+    border-radius: 10px;
+    font-weight: 700;
+  }
+  .tag.pri-عالية{ background: var(--pri-high-bg); color: var(--pri-high); }
+  .tag.pri-متوسطة{ background: var(--pri-mid-bg); color: var(--pri-mid); }
+  .tag.pri-عادية{ background: var(--pri-low-bg); color: var(--ink-soft); }
+
+  .del-btn{
+    border: none;
+    background: transparent;
+    color: var(--ink-dim);
+    font-size: 1.1rem;
+    cursor: pointer;
+    padding: 5px 9px;
+    flex-shrink: 0;
+    border-radius: 7px;
+    transition: all .15s ease;
+  }
+  .del-btn:hover{ background: var(--pri-high-bg); color: var(--pri-high); }
+
+  .empty{
+    text-align:center;
+    color: var(--ink-dim);
+    padding: 60px 20px;
+    font-size: 0.95rem;
+    font-weight: 500;
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    *{ transition: none !important; }
+  }
+
+  @media (max-width: 480px){
+    header h1{ font-size: 1.7rem; }
+    .wrap{ padding: 24px 14px 80px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header>
+    <h1>قائمة المهام</h1>
+    <div class="count" id="taskCount"></div>
+  </header>
+
+  <div class="add-box">
+    <div class="input-row">
+      <input type="text" id="taskInput" placeholder="اكتب مهمة جديدة..." />
+      <button class="plus-btn" id="optionsToggle" type="button" aria-label="خيارات المهمة">+</button>
+    </div>
+
+    <div class="options-panel" id="optionsPanel">
+      <div class="row">
+        <div class="seg">
+          <div class="seg-label">التصنيف</div>
+          <button class="chip active" data-cat="دوام">دوام</button>
+          <button class="chip" data-cat="بيت">بيت</button>
+          <button class="chip" data-cat="شخصي">شخصي</button>
+          <button class="chip" data-cat="أخرى">أخرى</button>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="seg">
+          <div class="seg-label">الأهمية</div>
+          <button class="chip active" data-pri="عالية">عالية</button>
+          <button class="chip" data-pri="متوسطة">متوسطة</button>
+          <button class="chip" data-pri="عادية">عادية</button>
+        </div>
+      </div>
+
+      <button class="add-btn" id="addBtn">إضافة المهمة</button>
+    </div>
+  </div>
+
+  <div class="filters" id="filters"></div>
+
+  <div id="taskList"></div>
+</div>
+
+<script>
+  const STORAGE_KEY = 'todo_tasks_v1';
+  let tasks = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+  let selectedCat = 'دوام';
+  let selectedPri = 'عالية';
+  let activeFilter = null;
+  const categories = ['دوام', 'بيت', 'شخصي', 'أخرى'];
+
+  const taskInput = document.getElementById('taskInput');
+  const addBtn = document.getElementById('addBtn');
+  const taskList = document.getElementById('taskList');
+  const taskCount = document.getElementById('taskCount');
+  const filters = document.getElementById('filters');
+  const optionsToggle = document.getElementById('optionsToggle');
+  const optionsPanel = document.getElementById('optionsPanel');
+
+  function openPanel(){
+    optionsPanel.classList.add('open');
+    optionsToggle.classList.add('open');
+  }
+  function closePanel(){
+    optionsPanel.classList.remove('open');
+    optionsToggle.classList.remove('open');
+  }
+  function togglePanel(){
+    if(optionsPanel.classList.contains('open')) closePanel();
+    else openPanel();
+  }
+
+  optionsToggle.addEventListener('click', togglePanel);
+
+  document.querySelectorAll('[data-cat]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('[data-cat]').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      selectedCat = btn.dataset.cat;
+    });
+  });
+
+  document.querySelectorAll('[data-pri]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('[data-pri]').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      selectedPri = btn.dataset.pri;
+    });
+  });
+
+  function renderFilters(){
+    const stats = categories.map(cat => {
+      const pendingInCat = tasks.filter(t => t.cat === cat && !t.done);
+      const counts = {
+        'عالية': pendingInCat.filter(t => t.pri === 'عالية').length,
+        'متوسطة': pendingInCat.filter(t => t.pri === 'متوسطة').length,
+        'عادية': pendingInCat.filter(t => t.pri === 'عادية').length
+      };
+      const best = pendingInCat.length
+        ? Math.min(...pendingInCat.map(t => priOrder[t.pri]))
+        : 99;
+      return { cat, counts, total: pendingInCat.length, best };
+    });
+
+    stats.sort((a, b) => a.best - b.best || b.total - a.total);
+
+    if(activeFilter === null || !categories.includes(activeFilter)){
+      activeFilter = stats[0].cat;
+    }
+
+    filters.innerHTML = stats.map(s => {
+      const badges = ['عالية', 'متوسطة', 'عادية']
+        .filter(p => s.counts[p] > 0)
+        .map(p => `<span class="fc-badge pri-${p}">${s.counts[p]}</span>`)
+        .join('');
+      return `
+        <button class="filter-chip ${s.cat === activeFilter ? 'active' : ''}" data-filter="${s.cat}">
+          ${s.cat}<span class="fc-counts">${badges}</span>
+        </button>
+      `;
+    }).join('');
+  }
+
+  filters.addEventListener('click', (e) => {
+    const btn = e.target.closest('.filter-chip');
+    if(!btn) return;
+    activeFilter = btn.dataset.filter;
+    render();
+  });
+
+  function save(){
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(tasks));
+  }
+
+  function addTask(){
+    const text = taskInput.value.trim();
+    if(!text) return;
+    tasks.unshift({
+      id: Date.now(),
+      text,
+      cat: selectedCat,
+      pri: selectedPri,
+      done: false
+    });
+    taskInput.value = '';
+    activeFilter = selectedCat;
+    closePanel();
+    save();
+    render();
+  }
+
+  addBtn.addEventListener('click', addTask);
+  taskInput.addEventListener('keydown', (e) => {
+    if(e.key === 'Enter') addTask();
+  });
+
+  function toggleDone(id){
+    const t = tasks.find(t => t.id === id);
+    if(t) t.done = !t.done;
+    save();
+    render();
+  }
+
+  function deleteTask(id){
+    tasks = tasks.filter(t => t.id !== id);
+    save();
+    render();
+  }
+
+  const priOrder = { 'عالية': 0, 'متوسطة': 1, 'عادية': 2 };
+
+  function render(){
+    renderFilters();
+
+    let visible = tasks.filter(t => t.cat === activeFilter);
+
+    const pending = visible.filter(t => !t.done).sort((a,b) => priOrder[a.pri] - priOrder[b.pri]);
+    const done = visible.filter(t => t.done);
+
+    taskCount.textContent = pending.length ? `${pending.length} مهمة متبقية` : '';
+
+    if(visible.length === 0){
+      taskList.innerHTML = `<div class="empty">لا توجد مهام في هذا التصنيف حالياً. أضف مهمتك الأولى أعلاه.</div>`;
+      return;
+    }
+
+    let html = '';
+
+    if(pending.length){
+      html += `<div class="group">`;
+      html += pending.map(taskHTML).join('');
+      html += `</div>`;
+    }
+
+    if(done.length){
+      html += `<div class="group">
+        <div class="group-title">منجزة (${done.length})</div>`;
+      html += done.map(taskHTML).join('');
+      html += `</div>`;
+    }
+
+    taskList.innerHTML = html;
+  }
+
+  function taskHTML(t){
+    return `
+      <div class="task ${t.done ? 'done' : ''}" data-pri="${t.pri}">
+        <button class="checkbox ${t.done ? 'checked' : ''}" onclick="toggleDone(${t.id})">${t.done ? '✓' : ''}</button>
+        <div class="task-body">
+          <div class="task-text">${escapeHTML(t.text)}</div>
+          <div class="task-tags">
+            <span class="tag pri-${t.pri}">${t.pri}</span>
+          </div>
+        </div>
+        <button class="del-btn" onclick="deleteTask(${t.id})">✕</button>
+      </div>
+    `;
+  }
+
+  function escapeHTML(str){
+    const div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+  }
+
+  render();
+</script>
+
+</body>
+</html>
