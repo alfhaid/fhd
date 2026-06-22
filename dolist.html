@@ -47,7 +47,7 @@
   .wrap{
     max-width: 720px;
     margin: 0 auto;
-    padding: 36px 20px 90px;
+    padding: 36px 20px 140px;
   }
 
   header{
@@ -103,12 +103,13 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
+    gap: 12px;
     background: transparent;
     border: none;
     padding: 16px 18px;
     cursor: pointer;
     transition: background .15s ease;
-    flex-direction: row-reverse;
+    box-sizing: border-box;
   }
   .add-trigger:hover{ background: var(--card-hover); }
   .add-trigger-label{
@@ -124,13 +125,13 @@
     border-radius: 50%;
     border: 1.5px solid var(--gold);
     color: var(--gold);
-    font-size: 1.1rem;
-    line-height: 1;
     display: flex;
     align-items: center;
     justify-content: center;
     transition: all .2s ease;
+    padding: 7px;
   }
+  .plus-circle svg{ width: 100%; height: 100%; }
   .add-trigger.open .plus-circle{
     background: var(--gold);
     color: #1a1408;
@@ -271,6 +272,23 @@
     align-items: center;
     gap: 10px;
   }
+  .acc-header-left{
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .acc-icon{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 19px;
+    height: 19px;
+    flex-shrink: 0;
+  }
+  .acc-icon svg{ width: 100%; height: 100%; }
+  .acc-section[data-cat="دوام"] .acc-icon{ color: var(--cat-work); }
+  .acc-section[data-cat="بيت"] .acc-icon{ color: var(--cat-home); }
+  .acc-section[data-cat="شخصي"] .acc-icon{ color: var(--cat-personal); }
   .acc-label{ color: var(--ink); }
   .acc-arrow{
     font-size: 0.8rem;
@@ -392,6 +410,15 @@
   .task[data-pri="عادية"] .task-text{ color: var(--ink-soft); }
   .task.done .task-text{ color: var(--ink-dim) !important; }
 
+  .today-dot{
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--gold);
+    flex-shrink: 0;
+    box-shadow: 0 0 0 3px rgba(201,160,92,0.18);
+  }
+
   .del-btn{
     border: none;
     background: transparent;
@@ -411,6 +438,54 @@
     padding: 60px 20px;
     font-size: 0.95rem;
     font-weight: 500;
+  }
+
+  .summary-bar{
+    position: fixed;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+    max-width: 720px;
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-bottom: none;
+    border-radius: 14px 14px 0 0;
+    padding: 12px 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 22px;
+    box-shadow: 0 -8px 24px -12px rgba(0,0,0,0.4);
+    z-index: 500;
+  }
+  .summary-item{
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    font-size: 0.85rem;
+    font-weight: 700;
+  }
+  .summary-dot{
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+  .summary-dot.pri-عالية{ background: var(--pri-high); }
+  .summary-dot.pri-متوسطة{ background: var(--pri-mid); }
+  .summary-dot.pri-عادية{ background: var(--ink-dim); }
+  .summary-item.pri-عالية{ color: var(--pri-high); }
+  .summary-item.pri-متوسطة{ color: var(--pri-mid); }
+  .summary-item.pri-عادية{ color: var(--ink-soft); }
+  .summary-empty{
+    color: var(--ink-dim);
+    font-size: 0.85rem;
+    font-weight: 500;
+  }
+
+  @media (max-width: 480px){
+    .summary-bar{ gap: 14px; padding: 10px 14px; }
   }
 
   .undo-toast{
@@ -479,10 +554,12 @@
   </header>
 
   <div class="add-box" id="addBox">
-    <button class="add-trigger" id="optionsToggle" type="button">
-      <span class="plus-circle" id="plusCircle">+</span>
+    <div class="add-trigger" id="optionsToggle" role="button" tabindex="0">
       <span class="add-trigger-label">إضافة مهمة جديدة</span>
-    </button>
+      <span class="plus-circle" id="plusCircle">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      </span>
+    </div>
 
     <div class="options-panel" id="optionsPanel">
       <div class="options-panel-inner">
@@ -514,6 +591,8 @@
   <div id="accordion"></div>
 </div>
 
+<div class="summary-bar" id="summaryBar"></div>
+
 <script>
   const STORAGE_KEY = 'todo_tasks_v1';
   let tasks = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
@@ -522,6 +601,12 @@
   let expandedCat = null;
   const categories = ['دوام', 'بيت', 'شخصي'];
   const catLabels = { 'دوام': 'الدوام', 'بيت': 'البيت', 'شخصي': 'شخصي' };
+
+  const catIcons = {
+    'دوام': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/><path d="M2 13h20"/></svg>',
+    'بيت': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9.5 12 3l9 6.5V20a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1Z"/></svg>',
+    'شخصي': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21v-1a8 8 0 0 1 16 0v1"/></svg>'
+  };
 
   // Migration: category "أخرى" was removed — move any existing tasks to "شخصي" so nothing is lost
   let migrated = false;
@@ -533,27 +618,34 @@
   });
   if(migrated) localStorage.setItem(STORAGE_KEY, JSON.stringify(tasks));
 
-  const taskInput = document.getElementById('taskInput');
-  const addBtn = document.getElementById('addBtn');
-  const taskCount = document.getElementById('taskCount');
-  const accordion = document.getElementById('accordion');
-  const optionsToggle = document.getElementById('optionsToggle');
-  const optionsPanel = document.getElementById('optionsPanel');
+  const taskInputEl = document.getElementById('taskInput');
+  const addBtnEl = document.getElementById('addBtn');
+  const taskCountEl = document.getElementById('taskCount');
+  const accordionEl = document.getElementById('accordion');
+  const optionsToggleEl = document.getElementById('optionsToggle');
+  const optionsPanelEl = document.getElementById('optionsPanel');
+  const summaryBarEl = document.getElementById('summaryBar');
 
   function openPanel(){
-    optionsPanel.classList.add('open');
-    optionsToggle.classList.add('open');
+    optionsPanelEl.classList.add('open');
+    optionsToggleEl.classList.add('open');
   }
   function closePanel(){
-    optionsPanel.classList.remove('open');
-    optionsToggle.classList.remove('open');
+    optionsPanelEl.classList.remove('open');
+    optionsToggleEl.classList.remove('open');
   }
   function togglePanel(){
-    if(optionsPanel.classList.contains('open')) closePanel();
+    if(optionsPanelEl.classList.contains('open')) closePanel();
     else openPanel();
   }
 
-  optionsToggle.addEventListener('click', togglePanel);
+  optionsToggleEl.addEventListener('click', togglePanel);
+  optionsToggleEl.addEventListener('keydown', (e) => {
+    if(e.key === 'Enter' || e.key === ' '){
+      e.preventDefault();
+      togglePanel();
+    }
+  });
 
   document.querySelectorAll('[data-cat]').forEach(btn => {
     btn.addEventListener('click', () => {
@@ -589,7 +681,7 @@
     return stats;
   }
 
-  accordion.addEventListener('click', (e) => {
+  accordionEl.addEventListener('click', (e) => {
     const header = e.target.closest('.acc-header');
     if(!header) return;
     const cat = header.dataset.cat;
@@ -602,7 +694,7 @@
   }
 
   function addTask(){
-    const text = taskInput.value.trim();
+    const text = taskInputEl.value.trim();
     if(!text) return;
     tasks.unshift({
       id: Date.now(),
@@ -611,15 +703,15 @@
       pri: selectedPri,
       done: false
     });
-    taskInput.value = '';
+    taskInputEl.value = '';
     expandedCat = selectedCat;
     closePanel();
     save();
     render();
   }
 
-  addBtn.addEventListener('click', addTask);
-  taskInput.addEventListener('keydown', (e) => {
+  addBtnEl.addEventListener('click', addTask);
+  taskInputEl.addEventListener('keydown', (e) => {
     if(e.key === 'Enter') addTask();
   });
 
@@ -692,13 +784,37 @@
     return 'مهمة';
   }
 
+  function renderSummaryBar(){
+    if(!summaryBarEl) return;
+    const pendingTasks = tasks.filter(t => !t.done);
+    if(pendingTasks.length === 0){
+      summaryBarEl.innerHTML = `<span class="summary-empty">لا توجد مهام متبقية 🎉</span>`;
+      return;
+    }
+    const counts = {
+      'عالية': pendingTasks.filter(t => t.pri === 'عالية').length,
+      'متوسطة': pendingTasks.filter(t => t.pri === 'متوسطة').length,
+      'عادية': pendingTasks.filter(t => t.pri === 'عادية').length
+    };
+    summaryBarEl.innerHTML = ['عالية', 'متوسطة', 'عادية']
+      .filter(p => counts[p] > 0)
+      .map(p => `
+        <span class="summary-item pri-${p}">
+          <span class="summary-dot pri-${p}"></span>
+          ${counts[p]} ${p}
+        </span>
+      `).join('');
+  }
+
   function render(){
     const stats = categoryStats();
 
     const totalPending = tasks.filter(t => !t.done).length;
-    taskCount.textContent = totalPending ? `${totalPending} ${pluralizeTask(totalPending)} متبقية إجمالاً` : 'لا توجد مهام متبقية';
+    taskCountEl.textContent = totalPending ? `${totalPending} ${pluralizeTask(totalPending)} متبقية إجمالاً` : 'لا توجد مهام متبقية';
 
-    accordion.innerHTML = stats.map(s => {
+    renderSummaryBar();
+
+    accordionEl.innerHTML = stats.map(s => {
       const isOpen = expandedCat === s.cat;
       const badges = ['عالية', 'متوسطة', 'عادية']
         .filter(p => s.counts[p] > 0)
@@ -726,10 +842,13 @@
         <div class="acc-section ${isOpen ? 'open' : ''}" data-cat="${s.cat}">
           <button class="acc-header" data-cat="${s.cat}">
             <span class="acc-header-right">
-              <span class="acc-arrow">‹</span>
+              <span class="acc-icon">${catIcons[s.cat]}</span>
               <span class="acc-label">${catLabels[s.cat]}</span>
             </span>
-            <span class="fc-counts">${badges}</span>
+            <span class="acc-header-left">
+              <span class="fc-counts">${badges}</span>
+              <span class="acc-arrow">‹</span>
+            </span>
           </button>
           <div class="acc-body">
             <div class="acc-body-inner">${bodyHTML}</div>
@@ -739,7 +858,16 @@
     }).join('');
   }
 
+  function isAddedToday(id){
+    const taskDate = new Date(id);
+    const now = new Date();
+    return taskDate.getFullYear() === now.getFullYear()
+        && taskDate.getMonth() === now.getMonth()
+        && taskDate.getDate() === now.getDate();
+  }
+
   function taskHTML(t){
+    const today = !t.done && isAddedToday(t.id);
     return `
       <div class="task ${t.done ? 'done' : ''}" data-pri="${t.pri}">
         <button class="checkbox ${t.done ? 'checked' : ''}" onclick="toggleDone(${t.id})">${t.done ? '✓' : ''}</button>
@@ -748,6 +876,7 @@
                onblur="saveEdit(${t.id}, this)"
                onkeydown="handleEditKey(event, this)">${escapeHTML(t.text)}</div>
         </div>
+        ${today ? '<span class="today-dot" title="أُضيفت اليوم"></span>' : ''}
         <button class="del-btn" onclick="deleteTask(${t.id})">✕</button>
       </div>
     `;
