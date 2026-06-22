@@ -149,56 +149,59 @@
     opacity: 1;
   }
   .options-panel-inner{
-    padding: 0 18px 18px;
+    padding: 0 18px 16px;
   }
-  .options-panel .add-btn{ margin-top: 6px; }
+  .options-panel .add-btn{ margin-top: 12px; }
 
+  .input-line{
+    display: flex;
+    align-items: center;
+    border-bottom: 1px solid var(--line);
+    padding: 8px 2px 10px;
+    margin-bottom: 12px;
+  }
   .add-box input[type=text]{
     width: 100%;
     border: none;
-    border-bottom: 1px solid var(--line);
-    padding: 10px 2px 12px;
-    font-size: 1.02rem;
+    padding: 0;
+    font-size: 0.98rem;
     font-family: 'Noto Kufi Arabic', sans-serif;
     font-weight: 500;
     background: transparent;
     color: var(--ink);
-    margin-bottom: 16px;
+    direction: rtl;
+    text-align: right;
   }
   .add-box input[type=text]::placeholder{ color: var(--ink-dim); }
-  .add-box input[type=text]:focus{
-    outline: none;
-    border-bottom-color: var(--gold);
-  }
+  .add-box input[type=text]:focus{ outline: none; }
+  .input-line:has(input:focus){ border-bottom-color: var(--gold); }
 
-  .row{
-    display:flex;
-    gap: 8px;
-    flex-wrap: wrap;
-    margin-bottom: 14px;
+  .option-row{
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 9px;
   }
-  .seg{
-    display:flex;
+  .option-row-label{
+    font-size: 0.72rem;
+    color: var(--ink-dim);
+    flex-shrink: 0;
+    width: 52px;
+  }
+  .chip-group{
+    display: flex;
     gap: 6px;
     flex: 1;
     flex-wrap: wrap;
-    align-items: center;
-  }
-  .seg-label{
-    font-size: 0.7rem;
-    color: var(--ink-dim);
-    width: 100%;
-    margin-bottom: 6px;
-    letter-spacing: 0.3px;
   }
   .chip{
     border: 1px solid var(--line);
     background: var(--bg-soft);
     color: var(--ink-soft);
-    font-size: 0.82rem;
+    font-size: 0.8rem;
     font-family: inherit;
     font-weight: 500;
-    padding: 7px 14px;
+    padding: 6px 13px;
     border-radius: 8px;
     cursor: pointer;
     user-select: none;
@@ -563,20 +566,22 @@
 
     <div class="options-panel" id="optionsPanel">
       <div class="options-panel-inner">
-        <input type="text" id="taskInput" placeholder="اكتب مهمة جديدة..." />
+        <div class="input-line">
+          <input type="text" id="taskInput" placeholder="اكتب مهمة جديدة..." />
+        </div>
 
-        <div class="row">
-          <div class="seg">
-            <div class="seg-label">التصنيف</div>
+        <div class="option-row">
+          <span class="option-row-label">التصنيف</span>
+          <div class="chip-group">
             <button class="chip active" data-cat="دوام">الدوام</button>
             <button class="chip" data-cat="بيت">البيت</button>
             <button class="chip" data-cat="شخصي">شخصي</button>
           </div>
         </div>
 
-        <div class="row">
-          <div class="seg">
-            <div class="seg-label">الأهمية</div>
+        <div class="option-row">
+          <span class="option-row-label">الأهمية</span>
+          <div class="chip-group">
             <button class="chip active" data-pri="عالية">عالية</button>
             <button class="chip" data-pri="متوسطة">متوسطة</button>
             <button class="chip" data-pri="عادية">عادية</button>
