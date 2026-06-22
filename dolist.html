@@ -193,7 +193,6 @@
   .chip.active[data-cat="دوام"]{ background: rgba(91,155,213,0.14); border-color: var(--cat-work); color: var(--cat-work); }
   .chip.active[data-cat="بيت"]{ background: rgba(111,174,124,0.14); border-color: var(--cat-home); color: var(--cat-home); }
   .chip.active[data-cat="شخصي"]{ background: rgba(176,138,212,0.14); border-color: var(--cat-personal); color: var(--cat-personal); }
-  .chip.active[data-cat="أخرى"]{ background: rgba(155,150,144,0.14); border-color: var(--cat-other); color: var(--cat-other); }
 
   .chip.active[data-pri="عالية"]{ background: var(--pri-high-bg); border-color: var(--pri-high); color: var(--pri-high); }
   .chip.active[data-pri="متوسطة"]{ background: var(--pri-mid-bg); border-color: var(--pri-mid); color: var(--pri-mid); }
@@ -215,36 +214,70 @@
   }
   .add-btn:hover{ filter: brightness(1.1); }
 
-  .filters{
-    display:flex;
-    gap: 8px;
-    margin-bottom: 22px;
-    flex-wrap: wrap;
+  #accordion{
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 10px;
   }
-  .filter-chip{
-    border: 1px solid var(--line);
+  .acc-section{
     background: var(--card);
-    color: var(--ink-soft);
-    font-size: 0.82rem;
-    font-family: inherit;
-    font-weight: 600;
-    padding: 8px 14px;
-    border-radius: 10px;
-    cursor: pointer;
+    border: 1px solid var(--line);
+    border-radius: 13px;
+    overflow: hidden;
+    border-right: 3px solid var(--line);
+    transition: border-color .15s ease;
+  }
+  .acc-section[data-cat]{}
+
+  .acc-section[data-cat="دوام"]{ border-right-color: var(--cat-work); }
+  .acc-section[data-cat="بيت"]{ border-right-color: var(--cat-home); }
+  .acc-section[data-cat="شخصي"]{ border-right-color: var(--cat-personal); }
+
+  .acc-section:nth-of-type(1){}
+  .acc-header{
+    width: 100%;
     display: flex;
     align-items: center;
-    gap: 8px;
-    transition: all .15s ease;
-    border-right: 3px solid transparent;
+    justify-content: space-between;
+    background: transparent;
+    border: none;
+    color: var(--ink-soft);
+    font-family: inherit;
+    font-size: 0.92rem;
+    font-weight: 700;
+    padding: 14px 16px;
+    cursor: pointer;
+    transition: background .15s ease;
   }
-  .filter-chip[data-filter="دوام"]{ border-right-color: var(--cat-work); }
-  .filter-chip[data-filter="بيت"]{ border-right-color: var(--cat-home); }
-  .filter-chip[data-filter="شخصي"]{ border-right-color: var(--cat-personal); }
-  .filter-chip[data-filter="أخرى"]{ border-right-color: var(--cat-other); }
+  .acc-header:hover{ background: var(--card-hover); }
+  .acc-header-right{
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .acc-label{ color: var(--ink); }
+  .acc-arrow{
+    font-size: 0.8rem;
+    color: var(--ink-dim);
+    transition: transform .2s ease;
+    display: inline-block;
+  }
+  .acc-section.open .acc-arrow{ transform: rotate(-90deg); }
 
-  .filter-chip.active{
-    background: var(--card-hover);
-    color: var(--ink);
+  .acc-body{
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height .25s ease;
+  }
+  .acc-section.open .acc-body{
+    max-height: 2000px;
+  }
+  .acc-body-inner{
+    padding: 0 14px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
   }
 
   .fc-counts{
@@ -267,14 +300,13 @@
   .fc-badge.pri-متوسطة{ background: var(--pri-mid-bg); color: var(--pri-mid); }
   .fc-badge.pri-عادية{ background: var(--pri-low-bg); color: var(--ink-soft); }
 
-  .group{ margin-bottom: 26px; }
-  .group-title{
-    font-size: 0.78rem;
+  .done-divider{
+    font-size: 0.75rem;
     color: var(--ink-dim);
-    margin-bottom: 10px;
-    padding-right: 2px;
     font-weight: 600;
-    letter-spacing: 0.3px;
+    margin-top: 6px;
+    padding-top: 10px;
+    border-top: 1px dashed var(--line);
   }
 
   .task{
@@ -323,8 +355,7 @@
   .task-body{ flex: 1; min-width: 0; }
   .task-text{
     font-size: 0.98rem;
-    font-weight: 500;
-    margin-bottom: 6px;
+    font-weight: 600;
     word-break: break-word;
     color: var(--ink);
     cursor: text;
@@ -340,20 +371,11 @@
     box-shadow: 0 0 0 1.5px var(--gold);
   }
   .task.done .task-text{ cursor: default; }
-  .task-tags{
-    display:flex;
-    gap: 6px;
-    flex-wrap: wrap;
-  }
-  .tag{
-    font-size: 0.68rem;
-    padding: 2px 10px;
-    border-radius: 10px;
-    font-weight: 700;
-  }
-  .tag.pri-عالية{ background: var(--pri-high-bg); color: var(--pri-high); }
-  .tag.pri-متوسطة{ background: var(--pri-mid-bg); color: var(--pri-mid); }
-  .tag.pri-عادية{ background: var(--pri-low-bg); color: var(--ink-soft); }
+
+  .task[data-pri="عالية"] .task-text{ color: var(--pri-high); }
+  .task[data-pri="متوسطة"] .task-text{ color: var(--pri-mid); }
+  .task[data-pri="عادية"] .task-text{ color: var(--ink-soft); }
+  .task.done .task-text{ color: var(--ink-dim) !important; }
 
   .del-btn{
     border: none;
@@ -454,7 +476,6 @@
           <button class="chip active" data-cat="دوام">الدوام</button>
           <button class="chip" data-cat="بيت">البيت</button>
           <button class="chip" data-cat="شخصي">شخصي</button>
-          <button class="chip" data-cat="أخرى">أخرى</button>
         </div>
       </div>
 
@@ -471,9 +492,7 @@
     </div>
   </div>
 
-  <div class="filters" id="filters"></div>
-
-  <div id="taskList"></div>
+  <div id="accordion"></div>
 </div>
 
 <script>
@@ -481,15 +500,24 @@
   let tasks = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
   let selectedCat = 'دوام';
   let selectedPri = 'عالية';
-  let activeFilter = null;
-  const categories = ['دوام', 'بيت', 'شخصي', 'أخرى'];
-  const catLabels = { 'دوام': 'الدوام', 'بيت': 'البيت', 'شخصي': 'شخصي', 'أخرى': 'أخرى' };
+  let expandedCat = null;
+  const categories = ['دوام', 'بيت', 'شخصي'];
+  const catLabels = { 'دوام': 'الدوام', 'بيت': 'البيت', 'شخصي': 'شخصي' };
+
+  // Migration: category "أخرى" was removed — move any existing tasks to "شخصي" so nothing is lost
+  let migrated = false;
+  tasks.forEach(t => {
+    if(!categories.includes(t.cat)){
+      t.cat = 'شخصي';
+      migrated = true;
+    }
+  });
+  if(migrated) localStorage.setItem(STORAGE_KEY, JSON.stringify(tasks));
 
   const taskInput = document.getElementById('taskInput');
   const addBtn = document.getElementById('addBtn');
-  const taskList = document.getElementById('taskList');
   const taskCount = document.getElementById('taskCount');
-  const filters = document.getElementById('filters');
+  const accordion = document.getElementById('accordion');
   const optionsToggle = document.getElementById('optionsToggle');
   const optionsPanel = document.getElementById('optionsPanel');
 
@@ -524,9 +552,10 @@
     });
   });
 
-  function renderFilters(){
+  function categoryStats(){
     const stats = categories.map(cat => {
       const pendingInCat = tasks.filter(t => t.cat === cat && !t.done);
+      const doneInCat = tasks.filter(t => t.cat === cat && t.done);
       const counts = {
         'عالية': pendingInCat.filter(t => t.pri === 'عالية').length,
         'متوسطة': pendingInCat.filter(t => t.pri === 'متوسطة').length,
@@ -535,32 +564,17 @@
       const best = pendingInCat.length
         ? Math.min(...pendingInCat.map(t => priOrder[t.pri]))
         : 99;
-      return { cat, counts, total: pendingInCat.length, best };
+      return { cat, counts, pendingCount: pendingInCat.length, doneCount: doneInCat.length, best };
     });
-
-    stats.sort((a, b) => a.best - b.best || b.total - a.total);
-
-    if(activeFilter === null || !categories.includes(activeFilter)){
-      activeFilter = stats[0].cat;
-    }
-
-    filters.innerHTML = stats.map(s => {
-      const badges = ['عالية', 'متوسطة', 'عادية']
-        .filter(p => s.counts[p] > 0)
-        .map(p => `<span class="fc-badge pri-${p}">${s.counts[p]}</span>`)
-        .join('');
-      return `
-        <button class="filter-chip ${s.cat === activeFilter ? 'active' : ''}" data-filter="${s.cat}">
-          ${catLabels[s.cat]}<span class="fc-counts">${badges}</span>
-        </button>
-      `;
-    }).join('');
+    stats.sort((a, b) => a.best - b.best || b.pendingCount - a.pendingCount);
+    return stats;
   }
 
-  filters.addEventListener('click', (e) => {
-    const btn = e.target.closest('.filter-chip');
-    if(!btn) return;
-    activeFilter = btn.dataset.filter;
+  accordion.addEventListener('click', (e) => {
+    const header = e.target.closest('.acc-header');
+    if(!header) return;
+    const cat = header.dataset.cat;
+    expandedCat = (expandedCat === cat) ? null : cat;
     render();
   });
 
@@ -579,7 +593,7 @@
       done: false
     });
     taskInput.value = '';
-    activeFilter = selectedCat;
+    expandedCat = selectedCat;
     closePanel();
     save();
     render();
@@ -603,6 +617,7 @@
     const idx = tasks.findIndex(t => t.id === id);
     if(idx === -1) return;
 
+    // If a previous delete is still pending undo, finalize it first
     if(pendingDelete){
       clearTimeout(pendingDelete.timeoutId);
       pendingDelete = null;
@@ -659,38 +674,50 @@
   }
 
   function render(){
-    renderFilters();
-
-    let visible = tasks.filter(t => t.cat === activeFilter);
-
-    const pending = visible.filter(t => !t.done).sort((a,b) => priOrder[a.pri] - priOrder[b.pri]);
-    const done = visible.filter(t => t.done);
+    const stats = categoryStats();
 
     const totalPending = tasks.filter(t => !t.done).length;
     taskCount.textContent = totalPending ? `${totalPending} ${pluralizeTask(totalPending)} متبقية إجمالاً` : 'لا توجد مهام متبقية';
 
-    if(visible.length === 0){
-      taskList.innerHTML = `<div class="empty">لا توجد مهام في هذا التصنيف حالياً. أضف مهمتك الأولى أعلاه.</div>`;
-      return;
-    }
+    accordion.innerHTML = stats.map(s => {
+      const isOpen = expandedCat === s.cat;
+      const badges = ['عالية', 'متوسطة', 'عادية']
+        .filter(p => s.counts[p] > 0)
+        .map(p => `<span class="fc-badge pri-${p}">${s.counts[p]}</span>`)
+        .join('');
 
-    let html = '';
+      const catTasks = tasks.filter(t => t.cat === s.cat);
+      const pending = catTasks.filter(t => !t.done).sort((a,b) => priOrder[a.pri] - priOrder[b.pri]);
+      const done = catTasks.filter(t => t.done);
 
-    if(pending.length){
-      html += `<div class="group">`;
-      html += `<div class="group-title">${catLabels[activeFilter]} — ${pending.length} متبقية</div>`;
-      html += pending.map(taskHTML).join('');
-      html += `</div>`;
-    }
+      let bodyHTML = '';
+      if(catTasks.length === 0){
+        bodyHTML = `<div class="empty">لا توجد مهام في هذا التصنيف حالياً. أضف مهمتك الأولى أعلاه.</div>`;
+      } else {
+        if(pending.length){
+          bodyHTML += pending.map(taskHTML).join('');
+        }
+        if(done.length){
+          bodyHTML += `<div class="done-divider">منجزة (${done.length})</div>`;
+          bodyHTML += done.map(taskHTML).join('');
+        }
+      }
 
-    if(done.length){
-      html += `<div class="group">
-        <div class="group-title">منجزة (${done.length})</div>`;
-      html += done.map(taskHTML).join('');
-      html += `</div>`;
-    }
-
-    taskList.innerHTML = html;
+      return `
+        <div class="acc-section ${isOpen ? 'open' : ''}" data-cat="${s.cat}">
+          <button class="acc-header" data-cat="${s.cat}">
+            <span class="acc-header-right">
+              <span class="acc-arrow">‹</span>
+              <span class="acc-label">${catLabels[s.cat]}</span>
+            </span>
+            <span class="fc-counts">${badges}</span>
+          </button>
+          <div class="acc-body">
+            <div class="acc-body-inner">${bodyHTML}</div>
+          </div>
+        </div>
+      `;
+    }).join('');
   }
 
   function taskHTML(t){
@@ -701,9 +728,6 @@
           <div class="task-text" ${t.done ? '' : 'contenteditable="true"'} spellcheck="false"
                onblur="saveEdit(${t.id}, this)"
                onkeydown="handleEditKey(event, this)">${escapeHTML(t.text)}</div>
-          <div class="task-tags">
-            <span class="tag pri-${t.pri}">${t.pri}</span>
-          </div>
         </div>
         <button class="del-btn" onclick="deleteTask(${t.id})">✕</button>
       </div>
