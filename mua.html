@@ -712,7 +712,7 @@
   const STORAGE_KEY = 'todo_tasks_mua';
   let tasks = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
   let selectedPri = 'عالية';
-  let activeTab = 'مهام'; // 'مهام' | 'معاذ' | 'معاذ والقصاص'
+  let activeTab = 'مهام'; // 'مهام' | 'معاذ' | 'معاذ والقصاص' | null (no tab open)
   let pickerOpenId = null; // id of task currently showing the owner picker
   let pastAddFormOpen = false; // whether the "add a past completed task" form is open
   const OWNERS = { moaz: 'معاذ', both: 'معاذ والقصاص' };
@@ -787,7 +787,7 @@
   tabsBarEl.addEventListener('click', (e) => {
     const btn = e.target.closest('.tab-btn');
     if(!btn) return;
-    activeTab = btn.dataset.tab;
+    activeTab = (activeTab === btn.dataset.tab) ? null : btn.dataset.tab;
     pickerOpenId = null;
     pastAddFormOpen = false;
     render();
@@ -1005,7 +1005,7 @@
   }
 
   function renderPastAddBar(){
-    if(activeTab === 'مهام'){
+    if(activeTab === 'مهام' || activeTab === null){
       pastAddBarEl.innerHTML = '';
       return;
     }
@@ -1051,7 +1051,7 @@
   }
 
   function renderStatsCard(){
-    if(activeTab === 'مهام'){
+    if(activeTab === 'مهام' || activeTab === null){
       statsCardEl.classList.add('hidden');
       statsCardEl.innerHTML = '';
       return;
@@ -1096,7 +1096,9 @@
 
     let listHTML = '';
 
-    if(activeTab === 'مهام'){
+    if(activeTab === null){
+      listHTML = '';
+    } else if(activeTab === 'مهام'){
       const pending = tasks.filter(t => !t.done).sort((a,b) => priOrder[a.pri] - priOrder[b.pri]);
       if(pending.length === 0){
         listHTML = `<div class="empty">لا توجد مهام حالياً. أضف مهمتك الأولى أعلاه.</div>`;
