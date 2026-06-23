@@ -1,0 +1,940 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>قائمة المهام - معاذ</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Aref+Ruqaa:wght@400;700&family=Noto+Kufi+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #15181e;
+    --bg-soft: #1b1f27;
+    --card: #1e222b;
+    --card-hover: #242935;
+    --line: #2c313d;
+    --ink: #e9e6df;
+    --ink-soft: #8b8f9c;
+    --ink-dim: #5d616d;
+    --gold: #c9a05c;
+
+    --cat-work: #5b9bd5;
+    --cat-home: #6fae7c;
+    --cat-personal: #b08ad4;
+    --cat-other: #9b9690;
+
+    --pri-high: #e0665b;
+    --pri-high-bg: rgba(224, 102, 91, 0.14);
+    --pri-mid: #e0a050;
+    --pri-mid-bg: rgba(224, 160, 80, 0.14);
+    --pri-low: #8b8f9c;
+    --pri-low-bg: rgba(139, 143, 156, 0.14);
+  }
+
+  * { box-sizing: border-box; }
+  html,body{
+    margin:0; padding:0;
+    background: var(--bg);
+    background-image:
+      radial-gradient(circle at 10% 0%, rgba(201,160,92,0.05), transparent 40%),
+      radial-gradient(circle at 90% 100%, rgba(91,155,213,0.04), transparent 40%);
+    color: var(--ink);
+    font-family: 'Noto Kufi Arabic', 'Tahoma', sans-serif;
+    min-height: 100vh;
+  }
+
+  .wrap{
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 36px 20px 140px;
+  }
+
+  header{
+    display:flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 28px;
+    padding-bottom: 18px;
+    border-bottom: 1px solid var(--line);
+    position: relative;
+  }
+  header h1{
+    font-family: 'Aref Ruqaa', serif;
+    font-weight: 700;
+    font-size: 2.1rem;
+    margin: 0;
+    margin-top: 10px;
+    color: var(--ink);
+    letter-spacing: 0.5px;
+    position: relative;
+    display: inline-block;
+    width: fit-content;
+    line-height: 1;
+  }
+  header::after{
+    content: '';
+    position: absolute;
+    bottom: -1px;
+    right: 0;
+    width: var(--title-line-width, 80px);
+    height: 1px;
+    background: var(--gold);
+  }
+  header .count{
+    font-size: 0.78rem;
+    color: var(--gold);
+    font-weight: 700;
+    padding: 5px 12px;
+    background: rgba(201,160,92,0.12);
+    border-radius: 14px;
+    margin-top: 20px;
+  }
+
+  .add-box{
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    margin-bottom: 26px;
+    overflow: hidden;
+  }
+  .add-trigger{
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    background: transparent;
+    border: none;
+    padding: 16px 18px;
+    cursor: pointer;
+    transition: background .15s ease;
+    box-sizing: border-box;
+  }
+  .add-trigger:hover{ background: var(--card-hover); }
+  .add-trigger-label{
+    font-family: 'Noto Kufi Arabic', sans-serif;
+    font-size: 0.98rem;
+    font-weight: 600;
+    color: var(--gold);
+  }
+  .plus-circle{
+    flex-shrink: 0;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    border: 1.5px solid var(--gold);
+    color: var(--gold);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all .2s ease;
+    padding: 7px;
+  }
+  .plus-circle svg{ width: 100%; height: 100%; }
+  .add-trigger.open .plus-circle{
+    background: var(--gold);
+    color: #1a1408;
+    transform: rotate(45deg);
+  }
+
+  .options-panel{
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height .25s ease, opacity .2s ease;
+    opacity: 0;
+  }
+  .options-panel.open{
+    max-height: 420px;
+    opacity: 1;
+  }
+  .options-panel-inner{
+    padding: 0 18px 16px;
+  }
+  .options-panel .add-btn{ margin-top: 12px; }
+
+  .input-line{
+    display: flex;
+    align-items: center;
+    border-bottom: 1px solid var(--line);
+    padding: 8px 2px 10px;
+    margin-bottom: 12px;
+  }
+  .add-box input[type=text]{
+    width: 100%;
+    border: none;
+    padding: 0;
+    font-size: 0.98rem;
+    font-family: 'Noto Kufi Arabic', sans-serif;
+    font-weight: 500;
+    background: transparent;
+    color: var(--ink);
+    direction: rtl;
+    text-align: right;
+  }
+  .add-box input[type=text]::placeholder{ color: var(--ink-dim); }
+  .add-box input[type=text]:focus{ outline: none; }
+  .input-line:has(input:focus){ border-bottom-color: var(--gold); }
+
+  .option-row{
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 9px;
+  }
+  .option-row-label{
+    font-size: 0.72rem;
+    color: var(--ink-dim);
+    flex-shrink: 0;
+    width: 52px;
+  }
+  .chip-group{
+    display: flex;
+    gap: 6px;
+    flex: 1;
+    flex-wrap: wrap;
+  }
+  .chip{
+    border: 1px solid var(--line);
+    background: var(--bg-soft);
+    color: var(--ink-soft);
+    font-size: 0.8rem;
+    font-family: inherit;
+    font-weight: 500;
+    padding: 6px 13px;
+    border-radius: 8px;
+    cursor: pointer;
+    user-select: none;
+    transition: all .15s ease;
+  }
+  .chip:hover{ border-color: var(--ink-dim); }
+
+  .chip.active[data-cat="دوام"]{ background: rgba(91,155,213,0.14); border-color: var(--cat-work); color: var(--cat-work); }
+  .chip.active[data-cat="بيت"]{ background: rgba(111,174,124,0.14); border-color: var(--cat-home); color: var(--cat-home); }
+  .chip.active[data-cat="شخصي"]{ background: rgba(176,138,212,0.14); border-color: var(--cat-personal); color: var(--cat-personal); }
+
+  .chip.active[data-pri="عالية"]{ background: var(--pri-high-bg); border-color: var(--pri-high); color: var(--pri-high); }
+  .chip.active[data-pri="متوسطة"]{ background: var(--pri-mid-bg); border-color: var(--pri-mid); color: var(--pri-mid); }
+  .chip.active[data-pri="عادية"]{ background: var(--pri-low-bg); border-color: var(--pri-low); color: var(--pri-low); }
+
+  .add-btn{
+    width: 100%;
+    background: var(--gold);
+    color: #1a1408;
+    border: none;
+    border-radius: 9px;
+    padding: 12px;
+    font-size: 0.95rem;
+    font-weight: 700;
+    font-family: inherit;
+    cursor: pointer;
+    transition: filter .15s ease;
+    margin-top: 4px;
+  }
+  .add-btn:hover{ filter: brightness(1.1); }
+
+  #accordion{
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 10px;
+  }
+  .acc-section{
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 13px;
+    overflow: hidden;
+    border-right: 3px solid var(--line);
+    transition: border-color .15s ease;
+  }
+  .acc-section[data-cat]{}
+
+  .acc-section[data-cat="دوام"]{ border-right-color: var(--cat-work); }
+  .acc-section[data-cat="بيت"]{ border-right-color: var(--cat-home); }
+  .acc-section[data-cat="شخصي"]{ border-right-color: var(--cat-personal); }
+
+  .acc-section:nth-of-type(1){}
+  .acc-header{
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: transparent;
+    border: none;
+    color: var(--ink-soft);
+    font-family: inherit;
+    font-size: 0.92rem;
+    font-weight: 700;
+    padding: 14px 16px;
+    cursor: pointer;
+    transition: background .15s ease;
+  }
+  .acc-header:hover{ background: var(--card-hover); }
+  .acc-header-right{
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .acc-header-left{
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .acc-icon{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 19px;
+    height: 19px;
+    flex-shrink: 0;
+  }
+  .acc-icon svg{ width: 100%; height: 100%; }
+  .acc-section[data-cat="دوام"] .acc-icon{ color: var(--cat-work); }
+  .acc-section[data-cat="بيت"] .acc-icon{ color: var(--cat-home); }
+  .acc-section[data-cat="شخصي"] .acc-icon{ color: var(--cat-personal); }
+  .acc-label{ color: var(--ink); }
+  .acc-arrow{
+    font-size: 0.8rem;
+    color: var(--ink-dim);
+    transition: transform .2s ease;
+    display: inline-block;
+  }
+  .acc-section.open .acc-arrow{ transform: rotate(-90deg); }
+
+  .acc-body{
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height .25s ease;
+  }
+  .acc-section.open .acc-body{
+    max-height: 2000px;
+  }
+  .acc-body-inner{
+    padding: 0 14px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
+  }
+
+  .fc-counts{
+    display:inline-flex;
+    gap: 4px;
+  }
+  .fc-badge{
+    font-size: 0.68rem;
+    font-weight: 700;
+    min-width: 18px;
+    height: 18px;
+    padding: 0 4px;
+    border-radius: 5px;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    font-family: 'Noto Kufi Arabic', sans-serif;
+  }
+  .fc-badge.pri-عالية{ background: var(--pri-high-bg); color: var(--pri-high); }
+  .fc-badge.pri-متوسطة{ background: var(--pri-mid-bg); color: var(--pri-mid); }
+  .fc-badge.pri-عادية{ background: var(--pri-low-bg); color: var(--ink-soft); }
+
+  .done-divider{
+    font-size: 0.75rem;
+    color: var(--ink-dim);
+    font-weight: 600;
+    margin-top: 6px;
+    padding-top: 10px;
+    border-top: 1px dashed var(--line);
+  }
+
+  .task{
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-right: 3px solid var(--line);
+    border-radius: 11px;
+    padding: 13px 16px;
+    margin-bottom: 9px;
+    display:flex;
+    align-items: center;
+    gap: 13px;
+    transition: opacity .2s ease, background .15s ease;
+  }
+  .task:hover{ background: var(--card-hover); }
+  .task.done{ opacity: 0.42; }
+  .task.done .task-text{ text-decoration: line-through; }
+
+  .task[data-pri="عالية"]{ border-right-color: var(--pri-high); }
+  .task[data-pri="متوسطة"]{ border-right-color: var(--pri-mid); }
+  .task[data-pri="عادية"]{ border-right-color: var(--ink-dim); }
+
+  .checkbox{
+    width: 23px;
+    height: 23px;
+    border: 2px solid var(--line);
+    border-radius: 7px;
+    cursor: pointer;
+    flex-shrink: 0;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    background: transparent;
+    transition: all .15s ease;
+    color: transparent;
+  }
+  .checkbox:hover{ border-color: var(--gold); }
+  .checkbox.checked{
+    background: var(--gold);
+    border-color: var(--gold);
+    color: #1a1408;
+    font-size: 0.85rem;
+    font-weight: 700;
+  }
+
+  .task-body{ flex: 1; min-width: 0; }
+  .task-text{
+    font-size: 0.98rem;
+    font-weight: 600;
+    word-break: break-word;
+    color: var(--ink);
+    cursor: text;
+    border-radius: 4px;
+    padding: 1px 3px;
+    margin-right: -3px;
+    outline: none;
+    transition: background .15s ease;
+  }
+  .task-text:hover{ background: rgba(201,160,92,0.08); }
+  .task-text:focus{
+    background: rgba(201,160,92,0.12);
+    box-shadow: 0 0 0 1.5px var(--gold);
+  }
+  .task.done .task-text{ cursor: default; }
+
+  .task[data-pri="عالية"] .task-text{ color: var(--pri-high); }
+  .task[data-pri="متوسطة"] .task-text{ color: var(--pri-mid); }
+  .task[data-pri="عادية"] .task-text{ color: var(--ink-soft); }
+  .task.done .task-text{ color: var(--ink-dim) !important; }
+
+  .today-dot{
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--gold);
+    flex-shrink: 0;
+    box-shadow: 0 0 0 3px rgba(201,160,92,0.18);
+  }
+
+  .del-btn{
+    border: none;
+    background: transparent;
+    color: var(--ink-dim);
+    font-size: 1.1rem;
+    cursor: pointer;
+    padding: 5px 9px;
+    flex-shrink: 0;
+    border-radius: 7px;
+    transition: all .15s ease;
+  }
+  .del-btn:hover{ background: var(--pri-high-bg); color: var(--pri-high); }
+
+  .empty{
+    text-align:center;
+    color: var(--ink-dim);
+    padding: 60px 20px;
+    font-size: 0.95rem;
+    font-weight: 500;
+  }
+
+  .summary-bar{
+    position: fixed;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+    max-width: 720px;
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-bottom: none;
+    border-radius: 14px 14px 0 0;
+    padding: 12px 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 22px;
+    box-shadow: 0 -8px 24px -12px rgba(0,0,0,0.4);
+    z-index: 500;
+  }
+  .summary-item{
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    font-size: 0.85rem;
+    font-weight: 700;
+  }
+  .summary-dot{
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+  .summary-dot.pri-عالية{ background: var(--pri-high); }
+  .summary-dot.pri-متوسطة{ background: var(--pri-mid); }
+  .summary-dot.pri-عادية{ background: var(--ink-dim); }
+  .summary-item.pri-عالية{ color: var(--pri-high); }
+  .summary-item.pri-متوسطة{ color: var(--pri-mid); }
+  .summary-item.pri-عادية{ color: var(--ink-soft); }
+  .summary-empty{
+    color: var(--ink-dim);
+    font-size: 0.85rem;
+    font-weight: 500;
+  }
+
+  @media (max-width: 480px){
+    .summary-bar{ gap: 14px; padding: 10px 14px; }
+  }
+
+  .undo-toast{
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%) translateY(20px);
+    background: #2a2e38;
+    border: 1px solid var(--line);
+    color: var(--ink);
+    padding: 12px 16px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    font-size: 0.88rem;
+    font-weight: 500;
+    box-shadow: 0 10px 30px -10px rgba(0,0,0,0.5);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity .2s ease, transform .2s ease;
+    z-index: 1000;
+    max-width: 90vw;
+  }
+  .undo-toast.show{
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+    pointer-events: auto;
+  }
+  .undo-text{
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .undo-btn{
+    background: var(--gold);
+    color: #1a1408;
+    border: none;
+    border-radius: 8px;
+    padding: 6px 14px;
+    font-size: 0.84rem;
+    font-weight: 700;
+    font-family: inherit;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: filter .15s ease;
+  }
+  .undo-btn:hover{ filter: brightness(1.1); }
+
+  @media (prefers-reduced-motion: reduce){
+    *{ transition: none !important; }
+  }
+
+  @media (max-width: 480px){
+    header h1{ font-size: 1.7rem; }
+    .wrap{ padding: 24px 14px 80px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header>
+    <h1>قائمة المهام</h1>
+    <div class="count" id="taskCount"></div>
+  </header>
+
+  <div class="add-box" id="addBox">
+    <div class="add-trigger" id="optionsToggle" role="button" tabindex="0">
+      <span class="add-trigger-label">إضافة مهمة جديدة</span>
+      <span class="plus-circle" id="plusCircle">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      </span>
+    </div>
+
+    <div class="options-panel" id="optionsPanel">
+      <div class="options-panel-inner">
+        <div class="input-line">
+          <input type="text" id="taskInput" placeholder="اكتب مهمة جديدة..." />
+        </div>
+
+        <div class="option-row">
+          <span class="option-row-label">التصنيف</span>
+          <div class="chip-group">
+            <button class="chip active" data-cat="دوام">الدوام</button>
+            <button class="chip" data-cat="بيت">البيت</button>
+            <button class="chip" data-cat="شخصي">شخصي</button>
+          </div>
+        </div>
+
+        <div class="option-row">
+          <span class="option-row-label">الأهمية</span>
+          <div class="chip-group">
+            <button class="chip active" data-pri="عالية">عالية</button>
+            <button class="chip" data-pri="متوسطة">متوسطة</button>
+            <button class="chip" data-pri="عادية">عادية</button>
+          </div>
+        </div>
+
+        <button class="add-btn" id="addBtn">إضافة المهمة</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="accordion"></div>
+</div>
+
+<div class="summary-bar" id="summaryBar"></div>
+
+<script>
+  const STORAGE_KEY = 'todo_tasks_mua';
+  let tasks = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+  let selectedCat = 'دوام';
+  let selectedPri = 'عالية';
+  let expandedCat = null;
+  const categories = ['دوام', 'بيت', 'شخصي'];
+  const catLabels = { 'دوام': 'الدوام', 'بيت': 'البيت', 'شخصي': 'شخصي' };
+
+  const catIcons = {
+    'دوام': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/><path d="M2 13h20"/></svg>',
+    'بيت': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9.5 12 3l9 6.5V20a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1Z"/></svg>',
+    'شخصي': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21v-1a8 8 0 0 1 16 0v1"/></svg>'
+  };
+
+  // Migration: category "أخرى" was removed — move any existing tasks to "شخصي" so nothing is lost
+  let migrated = false;
+  tasks.forEach(t => {
+    if(!categories.includes(t.cat)){
+      t.cat = 'شخصي';
+      migrated = true;
+    }
+  });
+  if(migrated) localStorage.setItem(STORAGE_KEY, JSON.stringify(tasks));
+
+  const taskInputEl = document.getElementById('taskInput');
+  const addBtnEl = document.getElementById('addBtn');
+  const taskCountEl = document.getElementById('taskCount');
+  const accordionEl = document.getElementById('accordion');
+  const optionsToggleEl = document.getElementById('optionsToggle');
+  const optionsPanelEl = document.getElementById('optionsPanel');
+  const summaryBarEl = document.getElementById('summaryBar');
+
+  function openPanel(){
+    optionsPanelEl.classList.add('open');
+    optionsToggleEl.classList.add('open');
+  }
+  function closePanel(){
+    optionsPanelEl.classList.remove('open');
+    optionsToggleEl.classList.remove('open');
+  }
+  function togglePanel(){
+    if(optionsPanelEl.classList.contains('open')) closePanel();
+    else openPanel();
+  }
+
+  optionsToggleEl.addEventListener('click', togglePanel);
+  optionsToggleEl.addEventListener('keydown', (e) => {
+    if(e.key === 'Enter' || e.key === ' '){
+      e.preventDefault();
+      togglePanel();
+    }
+  });
+
+  document.querySelectorAll('[data-cat]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('[data-cat]').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      selectedCat = btn.dataset.cat;
+    });
+  });
+
+  document.querySelectorAll('[data-pri]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('[data-pri]').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      selectedPri = btn.dataset.pri;
+    });
+  });
+
+  function categoryStats(){
+    const stats = categories.map(cat => {
+      const pendingInCat = tasks.filter(t => t.cat === cat && !t.done);
+      const doneInCat = tasks.filter(t => t.cat === cat && t.done);
+      const counts = {
+        'عالية': pendingInCat.filter(t => t.pri === 'عالية').length,
+        'متوسطة': pendingInCat.filter(t => t.pri === 'متوسطة').length,
+        'عادية': pendingInCat.filter(t => t.pri === 'عادية').length
+      };
+      const best = pendingInCat.length
+        ? Math.min(...pendingInCat.map(t => priOrder[t.pri]))
+        : 99;
+      return { cat, counts, pendingCount: pendingInCat.length, doneCount: doneInCat.length, best };
+    });
+    stats.sort((a, b) => a.best - b.best || b.pendingCount - a.pendingCount);
+    return stats;
+  }
+
+  accordionEl.addEventListener('click', (e) => {
+    const header = e.target.closest('.acc-header');
+    if(!header) return;
+    const cat = header.dataset.cat;
+    expandedCat = (expandedCat === cat) ? null : cat;
+    render();
+  });
+
+  function save(){
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(tasks));
+  }
+
+  function addTask(){
+    const text = taskInputEl.value.trim();
+    if(!text) return;
+    tasks.unshift({
+      id: Date.now(),
+      text,
+      cat: selectedCat,
+      pri: selectedPri,
+      done: false
+    });
+    taskInputEl.value = '';
+    expandedCat = selectedCat;
+    closePanel();
+    save();
+    render();
+  }
+
+  addBtnEl.addEventListener('click', addTask);
+  taskInputEl.addEventListener('keydown', (e) => {
+    if(e.key === 'Enter') addTask();
+  });
+
+  function toggleDone(id){
+    const t = tasks.find(t => t.id === id);
+    if(t) t.done = !t.done;
+    save();
+    render();
+  }
+
+  let pendingDelete = null; // { task, timeoutId }
+
+  function deleteTask(id){
+    const idx = tasks.findIndex(t => t.id === id);
+    if(idx === -1) return;
+
+    // If a previous delete is still pending undo, finalize it first
+    if(pendingDelete){
+      clearTimeout(pendingDelete.timeoutId);
+      pendingDelete = null;
+    }
+
+    const [removedTask] = tasks.splice(idx, 1);
+    save();
+    render();
+    showUndoToast(removedTask, idx);
+  }
+
+  function showUndoToast(removedTask, originalIndex){
+    let toast = document.getElementById('undoToast');
+    if(!toast){
+      toast = document.createElement('div');
+      toast.id = 'undoToast';
+      toast.className = 'undo-toast';
+      document.body.appendChild(toast);
+    }
+    toast.innerHTML = `
+      <span class="undo-text">تم حذف "${escapeHTML(truncate(removedTask.text, 28))}"</span>
+      <button class="undo-btn" id="undoBtn">تراجع</button>
+    `;
+    toast.classList.add('show');
+
+    document.getElementById('undoBtn').onclick = () => {
+      clearTimeout(pendingDelete.timeoutId);
+      tasks.splice(originalIndex, 0, removedTask);
+      pendingDelete = null;
+      save();
+      render();
+      toast.classList.remove('show');
+    };
+
+    const timeoutId = setTimeout(() => {
+      toast.classList.remove('show');
+      pendingDelete = null;
+    }, 5000);
+
+    pendingDelete = { task: removedTask, timeoutId };
+  }
+
+  function truncate(str, max){
+    return str.length > max ? str.slice(0, max) + '…' : str;
+  }
+
+  const priOrder = { 'عالية': 0, 'متوسطة': 1, 'عادية': 2 };
+
+  function pluralizeTask(n){
+    if(n === 1) return 'مهمة';
+    if(n === 2) return 'مهمتان';
+    if(n >= 3 && n <= 10) return 'مهام';
+    return 'مهمة';
+  }
+
+  function renderSummaryBar(){
+    if(!summaryBarEl) return;
+    const pendingTasks = tasks.filter(t => !t.done);
+    if(pendingTasks.length === 0){
+      summaryBarEl.innerHTML = `<span class="summary-empty">لا توجد مهام متبقية 🎉</span>`;
+      return;
+    }
+    const counts = {
+      'عالية': pendingTasks.filter(t => t.pri === 'عالية').length,
+      'متوسطة': pendingTasks.filter(t => t.pri === 'متوسطة').length,
+      'عادية': pendingTasks.filter(t => t.pri === 'عادية').length
+    };
+    summaryBarEl.innerHTML = ['عالية', 'متوسطة', 'عادية']
+      .filter(p => counts[p] > 0)
+      .map(p => `
+        <span class="summary-item pri-${p}">
+          <span class="summary-dot pri-${p}"></span>
+          ${counts[p]} ${p}
+        </span>
+      `).join('');
+  }
+
+  function render(){
+    const stats = categoryStats();
+
+    const totalPending = tasks.filter(t => !t.done).length;
+    taskCountEl.textContent = totalPending ? `${totalPending} ${pluralizeTask(totalPending)} متبقية إجمالاً` : 'لا توجد مهام متبقية';
+
+    renderSummaryBar();
+
+    accordionEl.innerHTML = stats.map(s => {
+      const isOpen = expandedCat === s.cat;
+      const badges = ['عالية', 'متوسطة', 'عادية']
+        .filter(p => s.counts[p] > 0)
+        .map(p => `<span class="fc-badge pri-${p}">${s.counts[p]}</span>`)
+        .join('');
+
+      const catTasks = tasks.filter(t => t.cat === s.cat);
+      const pending = catTasks.filter(t => !t.done).sort((a,b) => priOrder[a.pri] - priOrder[b.pri]);
+      const done = catTasks.filter(t => t.done);
+
+      let bodyHTML = '';
+      if(catTasks.length === 0){
+        bodyHTML = `<div class="empty">لا توجد مهام في هذا التصنيف حالياً. أضف مهمتك الأولى أعلاه.</div>`;
+      } else {
+        if(pending.length){
+          bodyHTML += pending.map(taskHTML).join('');
+        }
+        if(done.length){
+          bodyHTML += `<div class="done-divider">منجزة (${done.length})</div>`;
+          bodyHTML += done.map(taskHTML).join('');
+        }
+      }
+
+      return `
+        <div class="acc-section ${isOpen ? 'open' : ''}" data-cat="${s.cat}">
+          <button class="acc-header" data-cat="${s.cat}">
+            <span class="acc-header-right">
+              <span class="acc-icon">${catIcons[s.cat]}</span>
+              <span class="acc-label">${catLabels[s.cat]}</span>
+            </span>
+            <span class="acc-header-left">
+              <span class="fc-counts">${badges}</span>
+              <span class="acc-arrow">‹</span>
+            </span>
+          </button>
+          <div class="acc-body">
+            <div class="acc-body-inner">${bodyHTML}</div>
+          </div>
+        </div>
+      `;
+    }).join('');
+  }
+
+  function isAddedToday(id){
+    const taskDate = new Date(id);
+    const now = new Date();
+    return taskDate.getFullYear() === now.getFullYear()
+        && taskDate.getMonth() === now.getMonth()
+        && taskDate.getDate() === now.getDate();
+  }
+
+  function taskHTML(t){
+    const today = !t.done && isAddedToday(t.id);
+    return `
+      <div class="task ${t.done ? 'done' : ''}" data-pri="${t.pri}">
+        <button class="checkbox ${t.done ? 'checked' : ''}" onclick="toggleDone(${t.id})">${t.done ? '✓' : ''}</button>
+        <div class="task-body">
+          <div class="task-text" ${t.done ? '' : 'contenteditable="true"'} spellcheck="false"
+               onblur="saveEdit(${t.id}, this)"
+               onkeydown="handleEditKey(event, this)">${escapeHTML(t.text)}</div>
+        </div>
+        ${today ? '<span class="today-dot" title="أُضيفت اليوم"></span>' : ''}
+        <button class="del-btn" onclick="deleteTask(${t.id})">✕</button>
+      </div>
+    `;
+  }
+
+  function saveEdit(id, el){
+    const newText = el.textContent.trim();
+    const t = tasks.find(t => t.id === id);
+    if(!t) return;
+    if(newText === ''){
+      el.textContent = t.text;
+      return;
+    }
+    if(newText !== t.text){
+      t.text = newText;
+      save();
+    }
+  }
+
+  function handleEditKey(e, el){
+    if(e.key === 'Enter'){
+      e.preventDefault();
+      el.blur();
+    }
+    if(e.key === 'Escape'){
+      e.preventDefault();
+      el.blur();
+    }
+  }
+
+  function escapeHTML(str){
+    const div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+  }
+
+  function sizeTitleLine(){
+    const h1 = document.querySelector('header h1');
+    const header = document.querySelector('header');
+    if(h1 && header){
+      const width = h1.getBoundingClientRect().width;
+      header.style.setProperty('--title-line-width', (width + 6) + 'px');
+    }
+  }
+
+  render();
+  sizeTitleLine();
+  window.addEventListener('resize', sizeTitleLine);
+
+  if(document.fonts && document.fonts.ready){
+    document.fonts.ready.then(sizeTitleLine);
+  }
+</script>
+
+</body>
+</html>
