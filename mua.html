@@ -356,8 +356,7 @@
     flex-direction: column;
     gap: 10px;
   }
-  .past-add-form input[type=text],
-  .past-add-form input[type=date]{
+  .past-add-form input[type=text]{
     width: 100%;
     background: var(--bg-soft);
     border: 1px solid var(--line);
@@ -370,13 +369,25 @@
     direction: rtl;
   }
   .past-add-form input[type=text]::placeholder{ color: var(--ink-dim); }
-  .past-add-form input[type=text]:focus,
-  .past-add-form input[type=date]:focus{ outline: none; border-color: var(--gold); }
-  .past-add-form input[type=date]{
-    direction: ltr;
-    text-align: right;
-    color-scheme: dark;
+  .past-add-form input[type=text]:focus{ outline: none; border-color: var(--gold); }
+  .past-date-row{
+    display: flex;
+    gap: 8px;
   }
+  .past-date-row select{
+    flex: 1;
+    background: var(--bg-soft);
+    border: 1px solid var(--line);
+    border-radius: 9px;
+    padding: 10px 8px;
+    font-size: 0.85rem;
+    font-family: 'Noto Kufi Arabic', sans-serif;
+    font-weight: 500;
+    color: var(--ink);
+    direction: rtl;
+    cursor: pointer;
+  }
+  .past-date-row select:focus{ outline: none; border-color: var(--gold); }
   .past-add-form-row{
     display: flex;
     gap: 8px;
@@ -816,13 +827,18 @@
 
   function submitPastTask(ownerKey){
     const textEl = document.getElementById('pastTaskText');
-    const dateEl = document.getElementById('pastTaskDate');
+    const dayEl = document.getElementById('pastTaskDay');
+    const monthEl = document.getElementById('pastTaskMonth');
+    const yearEl = document.getElementById('pastTaskYear');
     const text = textEl ? textEl.value.trim() : '';
-    const dateVal = dateEl ? dateEl.value : '';
-    if(!text || !dateVal) return;
+    if(!text || !dayEl || !monthEl || !yearEl) return;
 
-    // build a timestamp from the chosen date (kept at local midday to avoid timezone edge cases)
-    const doneAt = new Date(dateVal + 'T12:00:00').getTime();
+    const day = parseInt(dayEl.value, 10);
+    const month = parseInt(monthEl.value, 10); // already 0-indexed
+    const year = parseInt(yearEl.value, 10);
+
+    // build a timestamp from the chosen Gregorian date (kept at local midday to avoid timezone edge cases)
+    const doneAt = new Date(year, month, day, 12, 0, 0).getTime();
 
     tasks.unshift({
       id: Date.now(),
@@ -941,9 +957,11 @@
     return 'مهمة';
   }
 
+  const GREGORIAN_MONTHS = ['يناير','فبراير','مارس','أبريل','مايو','يونيو','يوليو','أغسطس','سبتمبر','أكتوبر','نوفمبر','ديسمبر'];
+
   function formatDoneDate(ts){
     const d = new Date(ts);
-    return d.toLocaleDateString('ar-SA', { day: 'numeric', month: 'long' });
+    return `${d.getDate()} ${GREGORIAN_MONTHS[d.getMonth()]}`;
   }
 
   function renderSummaryBar(){
@@ -1003,11 +1021,27 @@
       return;
     }
 
-    const todayStr = new Date().toISOString().slice(0, 10);
+    const now = new Date();
+    const todayDay = now.getDate();
+    const todayMonth = now.getMonth(); // 0-indexed
+    const todayYear = now.getFullYear();
+    const monthNames = ['يناير','فبراير','مارس','أبريل','مايو','يونيو','يوليو','أغسطس','سبتمبر','أكتوبر','نوفمبر','ديسمبر'];
+
+    const dayOptions = Array.from({length: 31}, (_, i) => i + 1)
+      .map(d => `<option value="${d}" ${d === todayDay ? 'selected' : ''}>${d}</option>`).join('');
+    const monthOptions = monthNames
+      .map((m, i) => `<option value="${i}" ${i === todayMonth ? 'selected' : ''}>${m}</option>`).join('');
+    const yearOptions = Array.from({length: 6}, (_, i) => todayYear - i)
+      .map(y => `<option value="${y}" ${y === todayYear ? 'selected' : ''}>${y}</option>`).join('');
+
     pastAddBarEl.innerHTML = `
       <div class="past-add-form">
         <input type="text" id="pastTaskText" placeholder="اكتب المهمة المنجزة سابقاً..." />
-        <input type="date" id="pastTaskDate" value="${todayStr}" max="${todayStr}" />
+        <div class="past-date-row">
+          <select id="pastTaskDay">${dayOptions}</select>
+          <select id="pastTaskMonth">${monthOptions}</select>
+          <select id="pastTaskYear">${yearOptions}</select>
+        </div>
         <div class="past-add-form-row">
           <button class="add-btn" onclick="submitPastTask('${ownerKey}')">إضافة</button>
           <button class="owner-cancel" onclick="togglePastAddForm()">إلغاء</button>
