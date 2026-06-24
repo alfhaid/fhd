@@ -551,6 +551,16 @@
   }
   .owner-cancel:hover{ background: var(--line); color: var(--ink-soft); }
 
+  .month-divider{
+    font-size: 0.78rem;
+    color: var(--ink-dim);
+    font-weight: 700;
+    margin: 14px 2px 8px;
+    padding-bottom: 6px;
+    border-bottom: 1px dashed var(--line);
+  }
+  .month-divider:first-child{ margin-top: 0; }
+
   .empty{
     text-align:center;
     color: var(--ink-dim);
@@ -958,10 +968,11 @@
   }
 
   const GREGORIAN_MONTHS = ['يناير','فبراير','مارس','أبريل','مايو','يونيو','يوليو','أغسطس','سبتمبر','أكتوبر','نوفمبر','ديسمبر'];
+  const ARABIC_WEEKDAYS = ['الأحد','الإثنين','الثلاثاء','الأربعاء','الخميس','الجمعة','السبت'];
 
   function formatDoneDate(ts){
     const d = new Date(ts);
-    return `${d.getDate()} ${GREGORIAN_MONTHS[d.getMonth()]}`;
+    return `${ARABIC_WEEKDAYS[d.getDay()]} - ${d.getDate()}`;
   }
 
   function renderSummaryBar(){
@@ -1106,14 +1117,24 @@
         listHTML = pending.map(taskHTML).join('');
       }
     } else {
-      // 'معاذ' or 'معاذ والقصاص' tab: show that bucket's completed tasks, most recent first
+      // 'معاذ' or 'معاذ والقصاص' tab: show that bucket's completed tasks, most recent first,
+      // grouped with an automatic month-name divider whenever the calendar month changes.
       const doneByPerson = tasks
         .filter(t => t.done && t.doneBy === activeTab)
         .sort((a,b) => (b.doneAt || 0) - (a.doneAt || 0));
       if(doneByPerson.length === 0){
         listHTML = `<div class="empty">لا توجد مهام منجزة من ${activeTab} حتى الآن.</div>`;
       } else {
-        listHTML = doneByPerson.map(taskHTML).join('');
+        let lastMonth = null;
+        listHTML = doneByPerson.map(t => {
+          const monthIdx = t.doneAt ? new Date(t.doneAt).getMonth() : null;
+          let dividerHTML = '';
+          if(monthIdx !== null && monthIdx !== lastMonth){
+            dividerHTML = `<div class="month-divider">${GREGORIAN_MONTHS[monthIdx]}</div>`;
+            lastMonth = monthIdx;
+          }
+          return dividerHTML + taskHTML(t);
+        }).join('');
       }
     }
 
