@@ -33,8 +33,8 @@
 
     --owner-moaz: #5b9bd5;
     --owner-moaz-bg: rgba(91, 155, 213, 0.14);
-    --owner-both: #d4a23a;
-    --owner-both-bg: rgba(212, 162, 58, 0.14);
+    --owner-both: #D85A30;
+    --owner-both-bg: rgba(216, 90, 48, 0.14);
   }
 
   * { box-sizing: border-box; }
@@ -52,7 +52,7 @@
   .wrap{
     max-width: 720px;
     margin: 0 auto;
-    padding: 36px 20px 140px;
+    padding: 36px 20px 50px;
   }
 
   header{
@@ -96,79 +96,20 @@
     margin-top: 20px;
   }
 
-  .add-box{
+  .quick-add-box{
+    display: flex;
+    align-items: center;
+    gap: 10px;
     background: var(--card);
     border: 1px solid var(--line);
     border-radius: 14px;
+    padding: 6px 6px 6px 16px;
     margin-bottom: 26px;
-    overflow: hidden;
   }
-  .add-trigger{
-    width: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 12px;
-    background: transparent;
+  .quick-add-box input[type=text]{
+    flex: 1;
     border: none;
-    padding: 16px 18px;
-    cursor: pointer;
-    transition: background .15s ease;
-    box-sizing: border-box;
-  }
-  .add-trigger:hover{ background: var(--card-hover); }
-  .add-trigger-label{
-    font-family: 'Noto Kufi Arabic', sans-serif;
-    font-size: 0.98rem;
-    font-weight: 600;
-    color: var(--gold);
-  }
-  .plus-circle{
-    flex-shrink: 0;
-    width: 30px;
-    height: 30px;
-    border-radius: 50%;
-    border: 1.5px solid var(--gold);
-    color: var(--gold);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all .2s ease;
-    padding: 7px;
-  }
-  .plus-circle svg{ width: 100%; height: 100%; }
-  .add-trigger.open .plus-circle{
-    background: var(--gold);
-    color: #1a1408;
-    transform: rotate(45deg);
-  }
-
-  .options-panel{
-    max-height: 0;
-    overflow: hidden;
-    transition: max-height .25s ease, opacity .2s ease;
-    opacity: 0;
-  }
-  .options-panel.open{
-    max-height: 420px;
-    opacity: 1;
-  }
-  .options-panel-inner{
-    padding: 0 18px 16px;
-  }
-  .options-panel .add-btn{ margin-top: 12px; }
-
-  .input-line{
-    display: flex;
-    align-items: center;
-    border-bottom: 1px solid var(--line);
-    padding: 8px 2px 10px;
-    margin-bottom: 12px;
-  }
-  .add-box input[type=text]{
-    width: 100%;
-    border: none;
-    padding: 0;
+    padding: 10px 4px;
     font-size: 0.98rem;
     font-family: 'Noto Kufi Arabic', sans-serif;
     font-weight: 500;
@@ -177,46 +118,24 @@
     direction: rtl;
     text-align: right;
   }
-  .add-box input[type=text]::placeholder{ color: var(--ink-dim); }
-  .add-box input[type=text]:focus{ outline: none; }
-  .input-line:has(input:focus){ border-bottom-color: var(--gold); }
-
-  .option-row{
+  .quick-add-box input[type=text]::placeholder{ color: var(--ink-dim); }
+  .quick-add-box input[type=text]:focus{ outline: none; }
+  .quick-add-btn{
+    flex-shrink: 0;
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    border: none;
+    background: var(--gold);
+    color: #1a1408;
     display: flex;
     align-items: center;
-    gap: 10px;
-    margin-bottom: 9px;
-  }
-  .option-row-label{
-    font-size: 0.72rem;
-    color: var(--ink-dim);
-    flex-shrink: 0;
-    width: 52px;
-  }
-  .chip-group{
-    display: flex;
-    gap: 6px;
-    flex: 1;
-    flex-wrap: wrap;
-  }
-  .chip{
-    border: 1px solid var(--line);
-    background: var(--bg-soft);
-    color: var(--ink-soft);
-    font-size: 0.8rem;
-    font-family: inherit;
-    font-weight: 500;
-    padding: 6px 13px;
-    border-radius: 8px;
+    justify-content: center;
     cursor: pointer;
-    user-select: none;
-    transition: all .15s ease;
+    transition: filter .15s ease;
   }
-  .chip:hover{ border-color: var(--ink-dim); }
-
-  .chip.active[data-pri="عالية"]{ background: var(--pri-high-bg); border-color: var(--pri-high); color: var(--pri-high); }
-  .chip.active[data-pri="متوسطة"]{ background: var(--pri-mid-bg); border-color: var(--pri-mid); color: var(--pri-mid); }
-  .chip.active[data-pri="عادية"]{ background: var(--pri-low-bg); border-color: var(--pri-low); color: var(--pri-low); }
+  .quick-add-btn:hover{ filter: brightness(1.1); }
+  .quick-add-btn svg{ width: 18px; height: 18px; }
 
   .add-btn{
     width: 100%;
@@ -345,6 +264,131 @@
     height: 18px;
   }
 
+  .stats-bar{
+    margin-top: 4px;
+    display: flex;
+    justify-content: flex-end;
+  }
+  .stats-trigger{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    background: var(--card);
+    border: 1px dashed var(--line);
+    border-radius: 50%;
+    color: var(--ink-soft);
+    cursor: pointer;
+    transition: all .15s ease;
+    flex-shrink: 0;
+  }
+  .stats-trigger:hover{ background: var(--card-hover); border-color: var(--gold); color: var(--gold); }
+  .stats-trigger svg{
+    width: 18px;
+    height: 18px;
+  }
+
+  .stats-modal-overlay{
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.55);
+    z-index: 900;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+  .stats-modal-overlay.open{ display: flex; }
+  .stats-modal{
+    width: 100%;
+    max-width: 380px;
+    max-height: 80vh;
+    overflow-y: auto;
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    padding: 18px;
+  }
+  .stats-modal-header{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 14px;
+    font-size: 0.98rem;
+    font-weight: 700;
+    color: var(--ink);
+  }
+  .stats-modal-close{
+    background: transparent;
+    border: none;
+    color: var(--ink-dim);
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 7px;
+    display: flex;
+    transition: all .15s ease;
+  }
+  .stats-modal-close:hover{ background: var(--bg-soft); color: var(--ink); }
+  .stats-modal-close svg{ width: 18px; height: 18px; }
+
+  .stats-legend{
+    display: flex;
+    gap: 16px;
+    margin-bottom: 10px;
+    font-size: 0.74rem;
+    color: var(--ink-dim);
+  }
+  .stats-legend span{
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .stats-legend .dot{
+    width: 8px;
+    height: 8px;
+    border-radius: 2px;
+    flex-shrink: 0;
+  }
+  .stats-legend .dot.moaz{ background: var(--owner-moaz); }
+  .stats-legend .dot.both{ background: var(--owner-both); }
+
+  .stats-table{
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+  .stats-row{
+    display: grid;
+    grid-template-columns: 1.2fr 1fr 1fr;
+    padding: 10px 14px;
+    font-size: 0.85rem;
+    color: var(--ink);
+    border-bottom: 1px solid var(--line);
+  }
+  .stats-row:last-child{ border-bottom: none; }
+  .stats-row span{ text-align: center; }
+  .stats-row span:first-child{ text-align: right; font-weight: 600; }
+  .stats-row span:nth-child(2){ color: var(--owner-moaz); font-weight: 600; }
+  .stats-row span:nth-child(3){ color: var(--owner-both); font-weight: 600; }
+  .stats-row.total{
+    font-weight: 700;
+    background: var(--bg-soft);
+  }
+  .stats-row.total span:first-child{ color: var(--gold); }
+  .stats-row.total span:not(:first-child){ color: var(--gold); }
+
+  .stats-row.team-total{
+    font-weight: 700;
+    border-top: 1px solid var(--line);
+  }
+  .stats-row.team-total span:first-child{ color: #ffffff; text-align: right; }
+  .stats-row.team-total span.team-total-num{
+    grid-column: 2 / 4;
+    color: #ffffff !important;
+    text-align: center;
+  }
+
   .past-add-form{
     background: var(--card);
     border: 1px solid var(--line);
@@ -430,11 +474,39 @@
   .task[data-pri="متوسطة"]{ border-right-color: var(--pri-mid); }
   .task[data-pri="عادية"]{ border-right-color: var(--ink-dim); }
 
+  .month-divider{
+    font-size: 0.78rem;
+    color: var(--gold);
+    font-weight: 700;
+    margin: 14px 2px 8px;
+    padding-bottom: 6px;
+    border-bottom: 1px dashed var(--line);
+  }
+  .month-divider:first-child{ margin-top: 0; }
+
+  .month-group{
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 13px;
+    margin-bottom: 12px;
+    overflow: hidden;
+  }
+  .month-group .task{
+    background: transparent;
+    border: none;
+    border-radius: 0;
+    margin-bottom: 0;
+    padding: 11px 16px;
+    border-top: 1px solid var(--line);
+  }
+  .month-group .task:first-of-type{ border-top: none; }
+  .month-group .task:hover{ background: var(--card-hover); }
+
   .checkbox{
     width: 23px;
     height: 23px;
     border: 2px solid var(--line);
-    border-radius: 7px;
+    border-radius: 50%;
     cursor: pointer;
     flex-shrink: 0;
     display:flex;
@@ -446,9 +518,10 @@
   }
   .checkbox:hover{ border-color: var(--gold); }
   .checkbox.checked{
-    background: var(--gold);
-    border-color: var(--gold);
-    color: #1a1408;
+    background: transparent;
+    border-width: 1px;
+    border-color: var(--line);
+    color: var(--gold);
     font-size: 0.85rem;
     font-weight: 700;
   }
@@ -551,16 +624,6 @@
   }
   .owner-cancel:hover{ background: var(--line); color: var(--ink-soft); }
 
-  .month-divider{
-    font-size: 0.78rem;
-    color: var(--ink-dim);
-    font-weight: 700;
-    margin: 14px 2px 8px;
-    padding-bottom: 6px;
-    border-bottom: 1px dashed var(--line);
-  }
-  .month-divider:first-child{ margin-top: 0; }
-
   .empty{
     text-align:center;
     color: var(--ink-dim);
@@ -569,53 +632,6 @@
     font-weight: 500;
   }
 
-  .summary-bar{
-    position: fixed;
-    bottom: 0;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 100%;
-    max-width: 720px;
-    background: var(--card);
-    border: 1px solid var(--line);
-    border-bottom: none;
-    border-radius: 14px 14px 0 0;
-    padding: 12px 18px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 22px;
-    box-shadow: 0 -8px 24px -12px rgba(0,0,0,0.4);
-    z-index: 500;
-  }
-  .summary-item{
-    display: flex;
-    align-items: center;
-    gap: 7px;
-    font-size: 0.85rem;
-    font-weight: 700;
-  }
-  .summary-dot{
-    width: 9px;
-    height: 9px;
-    border-radius: 50%;
-    flex-shrink: 0;
-  }
-  .summary-dot.pri-عالية{ background: var(--pri-high); }
-  .summary-dot.pri-متوسطة{ background: var(--pri-mid); }
-  .summary-dot.pri-عادية{ background: var(--ink-dim); }
-  .summary-item.pri-عالية{ color: var(--pri-high); }
-  .summary-item.pri-متوسطة{ color: var(--pri-mid); }
-  .summary-item.pri-عادية{ color: var(--ink-soft); }
-  .summary-empty{
-    color: var(--ink-dim);
-    font-size: 0.85rem;
-    font-weight: 500;
-  }
-
-  @media (max-width: 480px){
-    .summary-bar{ gap: 14px; padding: 10px 14px; }
-  }
 
   .undo-toast{
     position: fixed;
@@ -670,7 +686,7 @@
 
   @media (max-width: 480px){
     header h1{ font-size: 1.7rem; }
-    .wrap{ padding: 24px 14px 80px; }
+    .wrap{ padding: 24px 14px 36px; }
   }
 </style>
 </head>
@@ -682,46 +698,36 @@
     <div class="count" id="taskCount"></div>
   </header>
 
-  <div class="add-box" id="addBox">
-    <div class="add-trigger" id="optionsToggle" role="button" tabindex="0">
-      <span class="add-trigger-label">إضافة مهمة جديدة</span>
-      <span class="plus-circle" id="plusCircle">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-      </span>
-    </div>
-
-    <div class="options-panel" id="optionsPanel">
-      <div class="options-panel-inner">
-        <div class="input-line">
-          <input type="text" id="taskInput" placeholder="اكتب مهمة جديدة..." />
-        </div>
-
-        <div class="option-row">
-          <span class="option-row-label">الأهمية</span>
-          <div class="chip-group">
-            <button class="chip active" data-pri="عالية">عالية</button>
-            <button class="chip" data-pri="متوسطة">متوسطة</button>
-            <button class="chip" data-pri="عادية">عادية</button>
-          </div>
-        </div>
-
-        <button class="add-btn" id="addBtn">إضافة المهمة</button>
-      </div>
-    </div>
+  <div class="quick-add-box" id="addBox">
+    <input type="text" id="taskInput" placeholder="اكتب مهمة جديدة..." />
+    <button class="quick-add-btn" id="addBtn" title="إضافة">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+    </button>
   </div>
 
   <div class="tabs" id="tabsBar"></div>
   <div class="stats-card" id="statsCard"></div>
   <div id="taskList"></div>
+  <div class="stats-bar" id="statsBar"></div>
   <div class="past-add-bar" id="pastAddBar"></div>
 </div>
 
-<div class="summary-bar" id="summaryBar"></div>
+<div class="stats-modal-overlay" id="statsModalOverlay" onclick="if(event.target===this) closeStatsModal()">
+  <div class="stats-modal">
+    <div class="stats-modal-header">
+      <span>إحصائيات الإنجاز</span>
+      <button class="stats-modal-close" onclick="closeStatsModal()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div id="statsModalBody"></div>
+  </div>
+</div>
+
 
 <script>
   const STORAGE_KEY = 'todo_tasks_mua';
   let tasks = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
-  let selectedPri = 'عالية';
   let activeTab = 'مهام'; // 'مهام' | 'معاذ' | 'معاذ والقصاص' | null (no tab open)
   let pickerOpenId = null; // id of task currently showing the owner picker
   let pastAddFormOpen = false; // whether the "add a past completed task" form is open
@@ -760,39 +766,10 @@
   const tabsBarEl = document.getElementById('tabsBar');
   const statsCardEl = document.getElementById('statsCard');
   const pastAddBarEl = document.getElementById('pastAddBar');
+  const statsBarEl = document.getElementById('statsBar');
+  const statsModalOverlayEl = document.getElementById('statsModalOverlay');
+  const statsModalBodyEl = document.getElementById('statsModalBody');
   const taskListEl = document.getElementById('taskList');
-  const optionsToggleEl = document.getElementById('optionsToggle');
-  const optionsPanelEl = document.getElementById('optionsPanel');
-  const summaryBarEl = document.getElementById('summaryBar');
-
-  function openPanel(){
-    optionsPanelEl.classList.add('open');
-    optionsToggleEl.classList.add('open');
-  }
-  function closePanel(){
-    optionsPanelEl.classList.remove('open');
-    optionsToggleEl.classList.remove('open');
-  }
-  function togglePanel(){
-    if(optionsPanelEl.classList.contains('open')) closePanel();
-    else openPanel();
-  }
-
-  optionsToggleEl.addEventListener('click', togglePanel);
-  optionsToggleEl.addEventListener('keydown', (e) => {
-    if(e.key === 'Enter' || e.key === ' '){
-      e.preventDefault();
-      togglePanel();
-    }
-  });
-
-  document.querySelectorAll('[data-pri]').forEach(btn => {
-    btn.addEventListener('click', () => {
-      document.querySelectorAll('[data-pri]').forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      selectedPri = btn.dataset.pri;
-    });
-  });
 
   tabsBarEl.addEventListener('click', (e) => {
     const btn = e.target.closest('.tab-btn');
@@ -813,14 +790,13 @@
     tasks.unshift({
       id: Date.now(),
       text,
-      pri: selectedPri,
+      pri: 'عادية',
       done: false,
       doneBy: null,
       doneAt: null
     });
     taskInputEl.value = '';
     activeTab = 'مهام';
-    closePanel();
     save();
     render();
   }
@@ -967,34 +943,18 @@
     return 'مهمة';
   }
 
+  function formatTaskCount(n){
+    if(n === 1) return 'مهمة واحدة';
+    if(n === 2) return 'مهمتان';
+    return `${n} ${pluralizeTask(n)}`;
+  }
+
   const GREGORIAN_MONTHS = ['يناير','فبراير','مارس','أبريل','مايو','يونيو','يوليو','أغسطس','سبتمبر','أكتوبر','نوفمبر','ديسمبر'];
   const ARABIC_WEEKDAYS = ['الأحد','الإثنين','الثلاثاء','الأربعاء','الخميس','الجمعة','السبت'];
 
   function formatDoneDate(ts){
     const d = new Date(ts);
     return `${ARABIC_WEEKDAYS[d.getDay()]} - ${d.getDate()}`;
-  }
-
-  function renderSummaryBar(){
-    if(!summaryBarEl) return;
-    const pendingTasks = tasks.filter(t => !t.done);
-    if(pendingTasks.length === 0){
-      summaryBarEl.innerHTML = `<span class="summary-empty">لا توجد مهام متبقية 🎉</span>`;
-      return;
-    }
-    const counts = {
-      'عالية': pendingTasks.filter(t => t.pri === 'عالية').length,
-      'متوسطة': pendingTasks.filter(t => t.pri === 'متوسطة').length,
-      'عادية': pendingTasks.filter(t => t.pri === 'عادية').length
-    };
-    summaryBarEl.innerHTML = ['عالية', 'متوسطة', 'عادية']
-      .filter(p => counts[p] > 0)
-      .map(p => `
-        <span class="summary-item pri-${p}">
-          <span class="summary-dot pri-${p}"></span>
-          ${counts[p]} ${p}
-        </span>
-      `).join('');
   }
 
   function renderTabs(){
@@ -1013,6 +973,77 @@
         ${tb.count ? `<span class="tab-count">${tb.count}</span>` : ''}
       </button>
     `).join('');
+  }
+
+  function renderStatsBar(){
+    if(activeTab !== 'مهام'){
+      statsBarEl.innerHTML = '';
+      return;
+    }
+    statsBarEl.innerHTML = `
+      <button class="stats-trigger" onclick="openStatsModal()" title="إحصائيات الإنجاز">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 16l4-4 4 4 5-7"/></svg>
+      </button>
+    `;
+  }
+
+  function buildStatsReport(){
+    const doneTasks = tasks.filter(t => t.done && t.doneAt && (t.doneBy === 'معاذ' || t.doneBy === 'معاذ والقصاص'));
+    const byMonth = {}; // key: "YYYY-MM" -> { monthIdx, moaz, both }
+    doneTasks.forEach(t => {
+      const d = new Date(t.doneAt);
+      const key = `${d.getFullYear()}-${d.getMonth()}`;
+      if(!byMonth[key]) byMonth[key] = { year: d.getFullYear(), monthIdx: d.getMonth(), moaz: 0, both: 0 };
+      if(t.doneBy === 'معاذ') byMonth[key].moaz++;
+      else byMonth[key].both++;
+    });
+    const rows = Object.values(byMonth).sort((a,b) => (b.year - a.year) || (b.monthIdx - a.monthIdx));
+    const totalMoaz = rows.reduce((sum, r) => sum + r.moaz, 0);
+    const totalBoth = rows.reduce((sum, r) => sum + r.both, 0);
+    return { rows, totalMoaz, totalBoth };
+  }
+
+  function openStatsModal(){
+    const { rows, totalMoaz, totalBoth } = buildStatsReport();
+
+    let bodyHTML = `
+      <div class="stats-legend">
+        <span><span class="dot moaz"></span>معاذ</span>
+        <span><span class="dot both"></span>معاذ والقصاص</span>
+      </div>
+      <div class="stats-table">
+    `;
+
+    if(rows.length === 0){
+      bodyHTML += `<div class="stats-row"><span>لا توجد بيانات بعد</span><span></span><span></span></div>`;
+    } else {
+      bodyHTML += rows.map(r => `
+        <div class="stats-row">
+          <span>${GREGORIAN_MONTHS[r.monthIdx]}</span>
+          <span>${r.moaz}</span>
+          <span>${r.both}</span>
+        </div>
+      `).join('');
+      bodyHTML += `
+        <div class="stats-row total">
+          <span>الإجمالي</span>
+          <span>${totalMoaz}</span>
+          <span>${totalBoth}</span>
+        </div>
+        <div class="stats-row team-total">
+          <span>إجمالي الإنجاز</span>
+          <span class="team-total-num">${formatTaskCount(totalMoaz + totalBoth)}</span>
+        </div>
+      `;
+    }
+
+    bodyHTML += `</div>`;
+    statsModalBodyEl.innerHTML = bodyHTML;
+    statsModalOverlayEl.classList.add('open');
+  }
+
+  function closeStatsModal(){
+    statsModalOverlayEl.classList.remove('open');
   }
 
   function renderPastAddBar(){
@@ -1099,11 +1130,10 @@
     renderTabs();
     renderStatsCard();
     renderPastAddBar();
+    renderStatsBar();
 
     const totalPending = tasks.filter(t => !t.done).length;
-    taskCountEl.textContent = totalPending ? `${totalPending} ${pluralizeTask(totalPending)} متبقية إجمالاً` : 'لا توجد مهام متبقية';
-
-    renderSummaryBar();
+    taskCountEl.textContent = totalPending ? `${formatTaskCount(totalPending)} متبقية` : 'لا توجد مهام متبقية';
 
     let listHTML = '';
 
@@ -1118,23 +1148,29 @@
       }
     } else {
       // 'معاذ' or 'معاذ والقصاص' tab: show that bucket's completed tasks, most recent first,
-      // grouped with an automatic month-name divider whenever the calendar month changes.
+      // grouped into one box per calendar month (label + tasks separated by thin internal dividers).
       const doneByPerson = tasks
         .filter(t => t.done && t.doneBy === activeTab)
         .sort((a,b) => (b.doneAt || 0) - (a.doneAt || 0));
       if(doneByPerson.length === 0){
         listHTML = `<div class="empty">لا توجد مهام منجزة من ${activeTab} حتى الآن.</div>`;
       } else {
-        let lastMonth = null;
-        listHTML = doneByPerson.map(t => {
+        const groups = []; // [{ monthIdx, items: [...] }]
+        doneByPerson.forEach(t => {
           const monthIdx = t.doneAt ? new Date(t.doneAt).getMonth() : null;
-          let dividerHTML = '';
-          if(monthIdx !== null && monthIdx !== lastMonth){
-            dividerHTML = `<div class="month-divider">${GREGORIAN_MONTHS[monthIdx]}</div>`;
-            lastMonth = monthIdx;
+          const lastGroup = groups[groups.length - 1];
+          if(lastGroup && lastGroup.monthIdx === monthIdx){
+            lastGroup.items.push(t);
+          } else {
+            groups.push({ monthIdx, items: [t] });
           }
-          return dividerHTML + taskHTML(t);
-        }).join('');
+        });
+        listHTML = groups.map(g => `
+          ${g.monthIdx !== null ? `<div class="month-divider">${GREGORIAN_MONTHS[g.monthIdx]}</div>` : ''}
+          <div class="month-group">
+            ${g.items.map(taskHTML).join('')}
+          </div>
+        `).join('');
       }
     }
 
