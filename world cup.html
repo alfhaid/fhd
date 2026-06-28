@@ -996,12 +996,16 @@ function renderBoard(){
     return;
   }
   container.innerHTML = board.map((b,i) => {
+    // Dense rank: count of distinct higher point-values + 1 (ties share rank, no gaps after)
+    const higherDistinctValues = new Set(board.filter(other => other.pts > b.pts).map(other => other.pts));
+    const rank = 1 + higherDistinctValues.size;
+
     let podiumClass = "";
-    let rankDisplay = i + 1;
+    let rankDisplay = rank;
     if(b.pts > 0){
-      if(i === 0){ podiumClass = "podium-gold"; rankDisplay = "🥇"; }
-      else if(i === 1){ podiumClass = "podium-silver"; rankDisplay = "🥈"; }
-      else if(i === 2){ podiumClass = "podium-bronze"; rankDisplay = "🥉"; }
+      if(rank === 1){ podiumClass = "podium-gold"; rankDisplay = "🥇"; }
+      else if(rank === 2){ podiumClass = "podium-silver"; rankDisplay = "🥈"; }
+      else if(rank === 3){ podiumClass = "podium-bronze"; rankDisplay = "🥉"; }
     }
     return `
     <div class="board-row ${podiumClass}">
