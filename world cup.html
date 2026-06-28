@@ -146,6 +146,23 @@
     padding:14px;
     margin:24px 0;
   }
+  .round-selector-bar{
+    display:flex;
+    gap:10px;
+    align-items:center;
+    justify-content:center;
+    margin-bottom:18px;
+  }
+  .round-selector-bar label{
+    font-size:13px;
+    color:var(--gold-bright);
+    font-weight:800;
+  }
+  .round-selector-bar select{
+    font-weight:800;
+    font-size:15px;
+    min-width:160px;
+  }
   .player-bar label{
     font-size:13px;
     color:var(--chalk-dim);
@@ -377,6 +394,28 @@
     display:flex;
     flex-direction:column;
     gap:8px;
+  }
+  .mypicks-round-section{
+    margin-bottom:18px;
+  }
+  .mypicks-round-section:last-of-type{
+    margin-bottom:0;
+  }
+  .mypicks-round-title{
+    font-size:14px;
+    font-weight:800;
+    color:var(--gold-bright);
+    margin-bottom:10px;
+    padding-bottom:6px;
+    border-bottom:1px solid var(--line);
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+  }
+  .mypicks-round-count{
+    font-size:11px;
+    color:var(--chalk-dim);
+    font-weight:700;
   }
 
   .pick-chip-grid{
@@ -641,6 +680,10 @@
   </div>
 
   <div id="matches" class="view active">
+    <div class="round-selector-bar">
+      <label>الدور:</label>
+      <select id="roundSelect"></select>
+    </div>
     <div class="match-grid" id="matchGrid"></div>
   </div>
 
@@ -662,24 +705,57 @@
 
 <script>
 // ===== DATA: Round of 32 — real fixtures =====
-const MATCHES = [
-  {id:1, home:"جنوب أفريقيا", homeCode:"RSA", away:"كندا", awayCode:"CAN", venue:"SoFi Stadium، إنجلوود", date:"الأحد 28 يونيو", time:"10:00 مساءً", status:"scheduled"},
-  {id:2, home:"البرازيل", homeCode:"BRA", away:"اليابان", awayCode:"JPN", venue:"NRG Stadium، هيوستن", date:"الإثنين 29 يونيو", time:"8:00 مساءً", status:"scheduled"},
-  {id:3, home:"ألمانيا", homeCode:"GER", away:"باراغواي", awayCode:"PAR", venue:"Gillette Stadium، فوكسبورو", date:"الإثنين 29 يونيو", time:"11:30 مساءً", status:"scheduled"},
-  {id:4, home:"هولندا", homeCode:"NED", away:"المغرب", awayCode:"MAR", venue:"Estadio BBVA، مونتيري", date:"الثلاثاء 30 يونيو", time:"4:00 صباحاً", status:"scheduled"},
-  {id:5, home:"ساحل العاج", homeCode:"CIV", away:"النرويج", awayCode:"NOR", venue:"AT&T Stadium، أرلينغتون", date:"الثلاثاء 30 يونيو", time:"8:00 مساءً", status:"scheduled"},
-  {id:6, home:"فرنسا", homeCode:"FRA", away:"السويد", awayCode:"SWE", venue:"MetLife Stadium، نيوجيرسي", date:"الأربعاء 1 يوليو", time:"12:00 منتصف الليل", status:"scheduled"},
-  {id:7, home:"المكسيك", homeCode:"MEX", away:"الإكوادور", awayCode:"ECU", venue:"Estadio Azteca، مكسيكو سيتي", date:"الأربعاء 1 يوليو", time:"4:00 صباحاً", status:"scheduled"},
-  {id:8, home:"إنجلترا", homeCode:"ENG", away:"الكونغو الديمقراطية", awayCode:"COD", venue:"Mercedes-Benz Stadium، أتلانتا", date:"الأربعاء 1 يوليو", time:"7:00 مساءً", status:"scheduled"},
-  {id:9, home:"بلجيكا", homeCode:"BEL", away:"السنغال", awayCode:"SEN", venue:"Lumen Field، سياتل", date:"الأربعاء 1 يوليو", time:"11:00 مساءً", status:"scheduled"},
-  {id:10, home:"أمريكا", homeCode:"USA", away:"البوسنة والهرسك", awayCode:"BIH", venue:"Levi's Stadium، سانتا كلارا", date:"الخميس 2 يوليو", time:"3:00 صباحاً", status:"scheduled"},
-  {id:11, home:"إسبانيا", homeCode:"ESP", away:"النمسا", awayCode:"AUT", venue:"SoFi Stadium، إنجلوود", date:"الخميس 2 يوليو", time:"10:00 مساءً", status:"scheduled"},
-  {id:12, home:"البرتغال", homeCode:"POR", away:"كرواتيا", awayCode:"CRO", venue:"BMO Field، تورنتو", date:"الجمعة 3 يوليو", time:"2:00 صباحاً", status:"scheduled"},
-  {id:13, home:"سويسرا", homeCode:"SUI", away:"الجزائر", awayCode:"DZA", venue:"BC Place، فانكوفر", date:"الجمعة 3 يوليو", time:"6:00 صباحاً", status:"scheduled"},
-  {id:14, home:"أستراليا", homeCode:"AUS", away:"مصر", awayCode:"EGY", venue:"AT&T Stadium، أرلينغتون", date:"الجمعة 3 يوليو", time:"9:00 مساءً", status:"scheduled"},
-  {id:15, home:"الأرجنتين", homeCode:"ARG", away:"الرأس الأخضر", awayCode:"CPV", venue:"Hard Rock Stadium، ميامي", date:"السبت 4 يوليو", time:"1:00 صباحاً", status:"scheduled"},
-  {id:16, home:"كولومبيا", homeCode:"COL", away:"غانا", awayCode:"GHA", venue:"Arrowhead Stadium، كانساس سيتي", date:"السبت 4 يوليو", time:"4:30 صباحاً", status:"scheduled"}
-];
+const ROUNDS = {
+  r32: {
+    label: "دور الـ٣٢",
+    matches: [
+      {id:1, home:"جنوب أفريقيا", homeCode:"RSA", away:"كندا", awayCode:"CAN", venue:"SoFi Stadium، إنجلوود", date:"الأحد 28 يونيو", time:"10:00 مساءً", status:"scheduled"},
+      {id:2, home:"البرازيل", homeCode:"BRA", away:"اليابان", awayCode:"JPN", venue:"NRG Stadium، هيوستن", date:"الإثنين 29 يونيو", time:"8:00 مساءً", status:"scheduled"},
+      {id:3, home:"ألمانيا", homeCode:"GER", away:"باراغواي", awayCode:"PAR", venue:"Gillette Stadium، فوكسبورو", date:"الإثنين 29 يونيو", time:"11:30 مساءً", status:"scheduled"},
+      {id:4, home:"هولندا", homeCode:"NED", away:"المغرب", awayCode:"MAR", venue:"Estadio BBVA، مونتيري", date:"الثلاثاء 30 يونيو", time:"4:00 صباحاً", status:"scheduled"},
+      {id:5, home:"ساحل العاج", homeCode:"CIV", away:"النرويج", awayCode:"NOR", venue:"AT&T Stadium، أرلينغتون", date:"الثلاثاء 30 يونيو", time:"8:00 مساءً", status:"scheduled"},
+      {id:6, home:"فرنسا", homeCode:"FRA", away:"السويد", awayCode:"SWE", venue:"MetLife Stadium، نيوجيرسي", date:"الأربعاء 1 يوليو", time:"12:00 منتصف الليل", status:"scheduled"},
+      {id:7, home:"المكسيك", homeCode:"MEX", away:"الإكوادور", awayCode:"ECU", venue:"Estadio Azteca، مكسيكو سيتي", date:"الأربعاء 1 يوليو", time:"4:00 صباحاً", status:"scheduled"},
+      {id:8, home:"إنجلترا", homeCode:"ENG", away:"الكونغو الديمقراطية", awayCode:"COD", venue:"Mercedes-Benz Stadium، أتلانتا", date:"الأربعاء 1 يوليو", time:"7:00 مساءً", status:"scheduled"},
+      {id:9, home:"بلجيكا", homeCode:"BEL", away:"السنغال", awayCode:"SEN", venue:"Lumen Field، سياتل", date:"الأربعاء 1 يوليو", time:"11:00 مساءً", status:"scheduled"},
+      {id:10, home:"أمريكا", homeCode:"USA", away:"البوسنة والهرسك", awayCode:"BIH", venue:"Levi's Stadium، سانتا كلارا", date:"الخميس 2 يوليو", time:"3:00 صباحاً", status:"scheduled"},
+      {id:11, home:"إسبانيا", homeCode:"ESP", away:"النمسا", awayCode:"AUT", venue:"SoFi Stadium، إنجلوود", date:"الخميس 2 يوليو", time:"10:00 مساءً", status:"scheduled"},
+      {id:12, home:"البرتغال", homeCode:"POR", away:"كرواتيا", awayCode:"CRO", venue:"BMO Field، تورنتو", date:"الجمعة 3 يوليو", time:"2:00 صباحاً", status:"scheduled"},
+      {id:13, home:"سويسرا", homeCode:"SUI", away:"الجزائر", awayCode:"DZA", venue:"BC Place، فانكوفر", date:"الجمعة 3 يوليو", time:"6:00 صباحاً", status:"scheduled"},
+      {id:14, home:"أستراليا", homeCode:"AUS", away:"مصر", awayCode:"EGY", venue:"AT&T Stadium، أرلينغتون", date:"الجمعة 3 يوليو", time:"9:00 مساءً", status:"scheduled"},
+      {id:15, home:"الأرجنتين", homeCode:"ARG", away:"الرأس الأخضر", awayCode:"CPV", venue:"Hard Rock Stadium، ميامي", date:"السبت 4 يوليو", time:"1:00 صباحاً", status:"scheduled"},
+      {id:16, home:"كولومبيا", homeCode:"COL", away:"غانا", awayCode:"GHA", venue:"Arrowhead Stadium، كانساس سيتي", date:"السبت 4 يوليو", time:"4:30 صباحاً", status:"scheduled"}
+    ]
+  },
+  r16: {
+    label: "دور الـ١٦",
+    matches: [
+      // أضف مباريات دور الـ16 هنا بنفس الشكل أعلاه بعد معرفة المتأهلين
+      // مثال: {id:101, home:"الفريق أ", homeCode:"XXX", away:"الفريق ب", awayCode:"YYY", venue:"...", date:"...", time:"...", status:"scheduled"}
+    ]
+  },
+  qf: {
+    label: "ربع النهائي",
+    matches: []
+  },
+  sf: {
+    label: "نصف النهائي",
+    matches: []
+  },
+  final: {
+    label: "النهائي",
+    matches: []
+  }
+};
+
+// ID prefixes must stay unique across rounds (1-99 r32, 101-199 r16, 201-299 qf, 301-399 sf, 401+ final)
+// to keep predictions/results storage keys collision-free.
+
+let currentRound = localStorage.getItem("wc2026_current_round_v2") || "r32";
+
+function getMatches(){
+  return ROUNDS[currentRound].matches;
+}
 
 const PIN = "fhd";
 
@@ -718,12 +794,18 @@ function saveAll(){
   localStorage.setItem(CURRENT_PLAYER_KEY, currentPlayer);
 }
 
-function getManualScore(matchId){
-  return manualResults[matchId] || null; // {home: int, away: int}
+function matchKey(roundKey, matchId){
+  return roundKey + ":" + matchId;
 }
 
-function getWinner(match){
-  const ms = getManualScore(match.id);
+function getManualScore(matchId, roundKey){
+  roundKey = roundKey || currentRound;
+  return manualResults[matchKey(roundKey, matchId)] || null; // {home: int, away: int}
+}
+
+function getWinner(match, roundKey){
+  roundKey = roundKey || currentRound;
+  const ms = getManualScore(match.id, roundKey);
   if(ms){
     if(ms.home === ms.away) return "draw";
     return ms.home > ms.away ? "home" : "away";
@@ -740,13 +822,28 @@ function renderPlayerSelect(){
     players.map(p => `<option value="${p}" ${p===currentPlayer?'selected':''}>${p}</option>`).join("");
 }
 
+function renderRoundSelect(){
+  const sel = document.getElementById("roundSelect");
+  sel.innerHTML = Object.keys(ROUNDS).map(key => {
+    const round = ROUNDS[key];
+    const countLabel = round.matches.length > 0 ? "" : " (لم تُضف بعد)";
+    return `<option value="${key}" ${key===currentRound?'selected':''}>${round.label}${countLabel}</option>`;
+  }).join("");
+}
+
 function renderMatches(){
   const grid = document.getElementById("matchGrid");
+  const matches = getMatches();
 
-  grid.innerHTML = MATCHES.map(m => {
+  if(matches.length === 0){
+    grid.innerHTML = '<div class="no-player-msg">لم تُضف مباريات هذا الدور بعد — يحتاج معرفة المتأهلين من الدور السابق أولاً.</div>';
+    return;
+  }
+
+  grid.innerHTML = matches.map(m => {
     const winner = getWinner(m);
     const isFinal = winner !== null;
-    const myPick = currentPlayer ? (predictions[currentPlayer] || {})[m.id] : null;
+    const myPick = currentPlayer ? (predictions[currentPlayer] || {})[matchKey(currentRound, m.id)] : null;
 
     let resultTag = "";
     if(isFinal){
@@ -813,7 +910,7 @@ function renderMatches(){
       const matchId = btn.dataset.match;
       const pick = btn.dataset.pick;
       if(!predictions[currentPlayer]) predictions[currentPlayer] = {};
-      predictions[currentPlayer][matchId] = pick;
+      predictions[currentPlayer][matchKey(currentRound, matchId)] = pick;
       saveAll();
       renderMatches();
     });
@@ -826,7 +923,7 @@ function renderMatches(){
       const awayInp = grid.querySelector(`.score-input[data-match="${matchId}"][data-side="away"]`);
       const h = homeInp.value, a = awayInp.value;
       if(h !== "" && a !== "" && !isNaN(h) && !isNaN(a)){
-        manualResults[matchId] = {home: parseInt(h), away: parseInt(a)};
+        manualResults[matchKey(currentRound, matchId)] = {home: parseInt(h), away: parseInt(a)};
         saveAll();
         renderMatches();
         renderBoard();
@@ -837,7 +934,7 @@ function renderMatches(){
   grid.querySelectorAll(".clear-score-btn").forEach(btn => {
     btn.addEventListener("click", () => {
       const matchId = btn.dataset.match;
-      delete manualResults[matchId];
+      delete manualResults[matchKey(currentRound, matchId)];
       saveAll();
       renderMatches();
       renderBoard();
@@ -848,13 +945,15 @@ function renderMatches(){
 function computeLeaderboard(){
   return players.map(p => {
     let pts = 0, total = 0;
-    MATCHES.forEach(m => {
-      const winner = getWinner(m);
-      const pick = (predictions[p] || {})[m.id];
-      if(winner){
-        total++;
-        if(pick === winner) pts++;
-      }
+    Object.keys(ROUNDS).forEach(roundKey => {
+      ROUNDS[roundKey].matches.forEach(m => {
+        const winner = getWinner(m, roundKey);
+        const pick = (predictions[p] || {})[matchKey(roundKey, m.id)];
+        if(winner){
+          total++;
+          if(pick === winner) pts++;
+        }
+      });
     });
     return {name:p, pts, total};
   }).sort((a,b) => b.pts - a.pts);
@@ -887,34 +986,51 @@ function renderMyPicks(){
     return;
   }
   const myPredictions = predictions[currentPlayer] || {};
-  const pickedCount = MATCHES.filter(m => myPredictions[m.id]).length;
 
-  const chips = MATCHES.map(m => {
-    const pick = myPredictions[m.id];
-    const pickLabel = pick === "home" ? m.home : (pick === "away" ? m.away : "—");
-    const filled = !!pick;
-    const ms = getManualScore(m.id);
-    const winner = getWinner(m);
-    const isFinal = winner !== null;
+  let totalPicked = 0;
+  let totalMatches = 0;
+  const sections = Object.keys(ROUNDS).map(roundKey => {
+    const round = ROUNDS[roundKey];
+    if(round.matches.length === 0) return "";
 
-    let statusMark = "";
-    let chipClass = filled ? "" : "empty";
-    if(isFinal && filled){
-      if(pick === winner){
-        statusMark = '<span class="chip-mark correct">✓</span>';
-        chipClass += " correct-chip";
-      } else {
-        statusMark = '<span class="chip-mark wrong">✗</span>';
-        chipClass += " wrong-chip";
+    totalMatches += round.matches.length;
+    const pickedCount = round.matches.filter(m => myPredictions[matchKey(roundKey, m.id)]).length;
+    totalPicked += pickedCount;
+
+    const chips = round.matches.map(m => {
+      const pick = myPredictions[matchKey(roundKey, m.id)];
+      const pickLabel = pick === "home" ? m.home : (pick === "away" ? m.away : "—");
+      const filled = !!pick;
+      const ms = getManualScore(m.id, roundKey);
+      const winner = getWinner(m, roundKey);
+      const isFinal = winner !== null;
+
+      let statusMark = "";
+      let chipClass = filled ? "" : "empty";
+      if(isFinal && filled){
+        if(pick === winner){
+          statusMark = '<span class="chip-mark correct">✓</span>';
+          chipClass += " correct-chip";
+        } else {
+          statusMark = '<span class="chip-mark wrong">✗</span>';
+          chipClass += " wrong-chip";
+        }
       }
-    }
-    const scoreLine = ms ? `<span class="pick-chip-score">${ms.home}-${ms.away}</span>` : "";
+      const scoreLine = ms ? `<span class="pick-chip-score">${ms.home}-${ms.away}</span>` : "";
+
+      return `
+        <div class="pick-chip ${chipClass}">
+          <span class="pick-chip-num">${m.id} ${statusMark}</span>
+          <span class="pick-chip-val">${pickLabel}</span>
+          ${scoreLine}
+        </div>
+      `;
+    }).join("");
 
     return `
-      <div class="pick-chip ${chipClass}">
-        <span class="pick-chip-num">${m.id} ${statusMark}</span>
-        <span class="pick-chip-val">${pickLabel}</span>
-        ${scoreLine}
+      <div class="mypicks-round-section">
+        <div class="mypicks-round-title">${round.label} <span class="mypicks-round-count">${pickedCount}/${round.matches.length}</span></div>
+        <div class="pick-chip-grid">${chips}</div>
       </div>
     `;
   }).join("");
@@ -923,9 +1039,9 @@ function renderMyPicks(){
     <div class="mypicks-card">
       <div class="mypicks-header">
         <div class="mypicks-name">🏆 ${currentPlayer}</div>
-        <div class="mypicks-sub">توقعاتي لدور الـ٣٢ · ${pickedCount} من ${MATCHES.length}</div>
+        <div class="mypicks-sub">${totalPicked} من ${totalMatches} توقع · عبر كل الأدوار</div>
       </div>
-      <div class="pick-chip-grid">${chips}</div>
+      ${sections}
       <div class="mypicks-footer">📸 صوّر هذا الملخص وأرسله لتجميع توقعات العائلة</div>
     </div>
   `;
@@ -949,6 +1065,13 @@ document.getElementById("playerSelect").addEventListener("change", (e) => {
   saveAll();
   renderMatches();
   renderMyPicks();
+});
+
+// Round select
+document.getElementById("roundSelect").addEventListener("change", (e) => {
+  currentRound = e.target.value;
+  localStorage.setItem("wc2026_current_round_v2", currentRound);
+  renderMatches();
 });
 
 document.getElementById("newPlayerBtn").addEventListener("click", () => {
@@ -980,6 +1103,7 @@ document.getElementById("resetAllBtn").addEventListener("click", () => {
 
 // Init
 renderPlayerSelect();
+renderRoundSelect();
 renderMatches();
 renderBoard();
 </script>
