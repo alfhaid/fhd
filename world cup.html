@@ -612,6 +612,13 @@
   }
 
   /* Compare All table */
+  .compare-note-line{
+    text-align:center;
+    font-size:11px;
+    color:var(--chalk-dim);
+    margin-top:14px;
+    margin-bottom:-4px;
+  }
   .compare-table-wrap{
     background:rgba(0,0,0,0.3);
     border:1px solid var(--line);
@@ -634,12 +641,13 @@
     white-space:nowrap;
   }
   .compare-table thead th.match-col{
-    text-align:right;
-    padding-right:14px;
+    text-align:center;
+    padding-right:8px;
     position:sticky;
     right:0;
     background:rgba(20,30,50,0.95);
-    min-width:140px;
+    min-width:36px;
+    width:36px;
   }
   .compare-table tbody td{
     padding:9px 8px;
@@ -649,20 +657,24 @@
     white-space:nowrap;
   }
   .compare-table tbody td.match-col{
-    text-align:right;
-    padding-right:14px;
+    text-align:center;
+    padding-right:8px;
     font-weight:700;
     color:#fff;
     position:sticky;
     right:0;
     background:rgba(13,27,46,0.97);
-    white-space:normal;
+    white-space:nowrap;
   }
   .compare-table tbody tr:nth-child(odd) td:not(.match-col){background:rgba(255,255,255,0.02);}
   .match-num-mini{
     color:var(--chalk-dim);
-    font-size:10px;
-    margin-right:4px;
+    font-size:13px;
+    font-weight:800;
+    margin-right:0;
+  }
+  .match-teams-full{
+    display:none;
   }
   .pick-cell-correct{color:#7CD992; font-weight:800;}
   .pick-cell-wrong{color:#FF8A6E; font-weight:800;}
@@ -771,7 +783,7 @@
   <div class="tabs">
     <button class="tab active" data-view="matches">المباريات والتوقعات</button>
     <button class="tab" data-view="mypicks">توقعاتي</button>
-    <button class="tab" data-view="compare">مقارنة الكل</button>
+    <button class="tab" data-view="compare">التوقعات</button>
     <button class="tab" data-view="board">لوحة الترتيب</button>
   </div>
 
@@ -979,18 +991,19 @@ function renderCompareTable(){
     }).join("");
     return `
       <tr>
-        <td class="match-col"><span class="match-num-mini">${m.id}</span>${m.home} × ${m.away}</td>
+        <td class="match-col"><span class="match-num-mini">${m.id}</span><span class="match-teams-full">${m.home} × ${m.away}</span></td>
         ${cells}
       </tr>
     `;
   }).join("");
 
   container.innerHTML = `
+    <div class="compare-note-line">رقم المباراة يطابق ترقيمها بتبويب "المباريات والتوقعات"</div>
     <div class="compare-table-wrap">
       <table class="compare-table">
         <thead>
           <tr>
-            <th class="match-col">المباراة</th>
+            <th class="match-col">#</th>
             ${headerCells}
           </tr>
         </thead>
