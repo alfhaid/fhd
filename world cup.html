@@ -611,6 +611,70 @@
     font-size:13px;
   }
 
+  /* Compare All table */
+  .compare-table-wrap{
+    background:rgba(0,0,0,0.3);
+    border:1px solid var(--line);
+    border-radius:16px;
+    overflow-x:auto;
+    margin-top:16px;
+  }
+  table.compare-table{
+    width:100%;
+    border-collapse:collapse;
+    font-size:12px;
+  }
+  .compare-table thead th{
+    background:rgba(255,199,44,0.12);
+    color:var(--gold-bright);
+    padding:10px 8px;
+    text-align:center;
+    font-weight:800;
+    border-bottom:2px solid rgba(255,199,44,0.3);
+    white-space:nowrap;
+  }
+  .compare-table thead th.match-col{
+    text-align:right;
+    padding-right:14px;
+    position:sticky;
+    right:0;
+    background:rgba(20,30,50,0.95);
+    min-width:140px;
+  }
+  .compare-table tbody td{
+    padding:9px 8px;
+    text-align:center;
+    border-bottom:1px solid rgba(255,255,255,0.06);
+    color:var(--chalk);
+    white-space:nowrap;
+  }
+  .compare-table tbody td.match-col{
+    text-align:right;
+    padding-right:14px;
+    font-weight:700;
+    color:#fff;
+    position:sticky;
+    right:0;
+    background:rgba(13,27,46,0.97);
+    white-space:normal;
+  }
+  .compare-table tbody tr:nth-child(odd) td:not(.match-col){background:rgba(255,255,255,0.02);}
+  .match-num-mini{
+    color:var(--chalk-dim);
+    font-size:10px;
+    margin-right:4px;
+  }
+  .pick-cell-correct{color:#7CD992; font-weight:800;}
+  .pick-cell-wrong{color:#FF8A6E; font-weight:800;}
+  .pick-cell-pending{color:var(--gold-bright);}
+  .pick-cell-empty{color:#5a6275;}
+  .compare-empty{
+    text-align:center;
+    padding:30px;
+    color:var(--chalk-dim);
+    font-size:13px;
+  }
+
   /* Admin panel */
   .admin-toggle{
     text-align:center;
@@ -707,6 +771,7 @@
   <div class="tabs">
     <button class="tab active" data-view="matches">المباريات والتوقعات</button>
     <button class="tab" data-view="mypicks">توقعاتي</button>
+    <button class="tab" data-view="compare">مقارنة الكل</button>
     <button class="tab" data-view="board">لوحة الترتيب</button>
   </div>
 
@@ -720,6 +785,14 @@
 
   <div id="mypicks" class="view">
     <div id="mypicksContainer"></div>
+  </div>
+
+  <div id="compare" class="view">
+    <div class="round-selector-bar">
+      <label>الدور:</label>
+      <select id="compareRoundSelect"></select>
+    </div>
+    <div id="compareContainer"></div>
   </div>
 
   <div id="board" class="view">
@@ -862,6 +935,71 @@ function renderRoundSelect(){
     const countLabel = round.matches.length > 0 ? "" : " (لم تُضف بعد)";
     return `<option value="${key}" ${key===currentRound?'selected':''}>${round.label}${countLabel}</option>`;
   }).join("");
+}
+
+let compareRound = currentRound;
+
+function renderCompareRoundSelect(){
+  const sel = document.getElementById("compareRoundSelect");
+  if(!sel) return;
+  sel.innerHTML = Object.keys(ROUNDS).map(key => {
+    const round = ROUNDS[key];
+    const countLabel = round.matches.length > 0 ? "" : " (لم تُضف بعد)";
+    return `<option value="${key}" ${key===compareRound?'selected':''}>${round.label}${countLabel}</option>`;
+  }).join("");
+}
+
+function renderCompareTable(){
+  const container = document.getElementById("compareContainer");
+  const round = ROUNDS[compareRound];
+
+  if(players.length === 0){
+    container.innerHTML = '<div class="compare-empty">لا يوجد أعضاء مضافون على هذا الجهاز بعد.</div>';
+    return;
+  }
+  if(round.matches.length === 0){
+    container.innerHTML = '<div class="compare-empty">لم تُضف مباريات هذا الدور بعد.</div>';
+    return;
+  }
+
+  const headerCells = players.map(p => `<th>${p}</th>`).join("");
+
+  const rows = round.matches.map(m => {
+    const winner = getWinner(m, compareRound);
+    const cells = players.map(p => {
+      const pick = (predictions[p] || {})[matchKey(compareRound, m.id)];
+      if(!pick) return `<td class="pick-cell-empty">—</td>`;
+      const pickLabel = pick === "home" ? m.home : m.away;
+      if(winner){
+        const cls = pick === winner ? "pick-cell-correct" : "pick-cell-wrong";
+        const mark = pick === winner ? "✓" : "✗";
+        return `<td class="${cls}">${mark} ${pickLabel}</td>`;
+      }
+      return `<td class="pick-cell-pending">${pickLabel}</td>`;
+    }).join("");
+    return `
+      <tr>
+        <td class="match-col"><span class="match-num-mini">${m.id}</span>${m.home} × ${m.away}</td>
+        ${cells}
+      </tr>
+    `;
+  }).join("");
+
+  container.innerHTML = `
+    <div class="compare-table-wrap">
+      <table class="compare-table">
+        <thead>
+          <tr>
+            <th class="match-col">المباراة</th>
+            ${headerCells}
+          </tr>
+        </thead>
+        <tbody>
+          ${rows}
+        </tbody>
+      </table>
+    </div>
+  `;
 }
 
 function renderMatches(){
@@ -1098,6 +1236,7 @@ document.querySelectorAll(".tab").forEach(tab => {
     document.getElementById(tab.dataset.view).classList.add("active");
     if(tab.dataset.view === "board") renderBoard();
     if(tab.dataset.view === "mypicks") renderMyPicks();
+    if(tab.dataset.view === "compare") { renderCompareRoundSelect(); renderCompareTable(); }
   });
 });
 
@@ -1114,6 +1253,12 @@ document.getElementById("roundSelect").addEventListener("change", (e) => {
   currentRound = e.target.value;
   localStorage.setItem("wc2026_current_round_v2", currentRound);
   renderMatches();
+});
+
+// Compare round select
+document.getElementById("compareRoundSelect").addEventListener("change", (e) => {
+  compareRound = e.target.value;
+  renderCompareTable();
 });
 
 document.getElementById("newPlayerBtn").addEventListener("click", () => {
