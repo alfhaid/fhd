@@ -787,6 +787,8 @@ function getMatches(){
 }
 
 const PIN = "fhd";
+const ADD_NAME_PIN = "990";
+let extraNamesUnlocked = localStorage.getItem("wc2026_extra_names_unlocked_v2") === "true";
 
 // Map FIFA 3-letter codes to ISO 2-letter codes for flag emoji
 const FIFA_TO_ISO = {
@@ -1085,7 +1087,7 @@ function renderMyPicks(){
         <div class="mypicks-sub">${totalPicked} من ${totalMatches} توقع · عبر كل الأدوار</div>
       </div>
       ${sections}
-      <div class="mypicks-footer">📸 صوّر هذا الملخص وأرسله لجمع التوقعات </div>
+      <div class="mypicks-footer">📸 صوّر هذا الملخص وأرسله لتجميع توقعات العائلة</div>
     </div>
   `;
 }
@@ -1118,6 +1120,18 @@ document.getElementById("roundSelect").addEventListener("change", (e) => {
 });
 
 document.getElementById("newPlayerBtn").addEventListener("click", () => {
+  // First name on this browser: free, no password needed
+  if(players.length > 0 && !extraNamesUnlocked){
+    const entered = prompt("هذا المتصفح أضاف اسماً من قبل. لإضافة اسم آخر، ادخل الرمز:");
+    if(entered === null) return; // cancelled
+    if(entered !== ADD_NAME_PIN){
+      alert("رمز خاطئ");
+      return;
+    }
+    extraNamesUnlocked = true;
+    localStorage.setItem("wc2026_extra_names_unlocked_v2", "true");
+  }
+
   const name = prompt("اكتب اسمك:");
   if(name && name.trim()){
     const trimmed = name.trim();
