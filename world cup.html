@@ -594,8 +594,14 @@
     text-align:left;
   }
   .board-sub{font-size:11px; color:var(--chalk-dim); display:flex; gap:10px;}
-  .board-correct{color:#7CD992; font-weight:700;}
-  .board-wrong{color:#FF8A6E; font-weight:700;}
+  .board-stats{
+    display:flex;
+    gap:10px;
+    font-size:13px;
+    margin-left:6px;
+  }
+  .board-correct{color:#7CD992; font-weight:800;}
+  .board-wrong{color:#FF8A6E; font-weight:800;}
   .empty-board{
     text-align:center;
     padding:30px;
@@ -1000,14 +1006,12 @@ function renderBoard(){
     return `
     <div class="board-row ${podiumClass}">
       <div class="rank-num">${rankDisplay}</div>
-      <div>
-        <div class="board-name">${b.name}</div>
-        <div class="board-sub">
-          <span class="board-correct">✓ ${b.pts} صحيح</span>
-          <span class="board-wrong">✗ ${b.wrong} خاطئ</span>
-        </div>
-      </div>
+      <div class="board-name">${b.name}</div>
       <div style="flex:1"></div>
+      <div class="board-stats">
+        <span class="board-correct">✓ ${b.pts}</span>
+        <span class="board-wrong">✗ ${b.wrong}</span>
+      </div>
       <div class="board-pts">${b.pts} نقطة</div>
     </div>
   `;
