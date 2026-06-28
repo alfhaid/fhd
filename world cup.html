@@ -572,7 +572,9 @@
     font-size:18px;
     color:var(--gold-bright);
   }
-  .board-sub{font-size:11px; color:var(--chalk-dim);}
+  .board-sub{font-size:11px; color:var(--chalk-dim); display:flex; gap:10px;}
+  .board-correct{color:#7CD992; font-weight:700;}
+  .board-wrong{color:#FF8A6E; font-weight:700;}
   .empty-board{
     text-align:center;
     padding:30px;
@@ -955,7 +957,7 @@ function computeLeaderboard(){
         }
       });
     });
-    return {name:p, pts, total};
+    return {name:p, pts, total, wrong: total - pts};
   }).sort((a,b) => b.pts - a.pts);
 }
 
@@ -971,7 +973,10 @@ function renderBoard(){
       <div class="rank-num">${i+1}</div>
       <div>
         <div class="board-name">${b.name}</div>
-        <div class="board-sub">${b.total} مباراة محسومة</div>
+        <div class="board-sub">
+          <span class="board-correct">✓ ${b.pts} صحيح</span>
+          <span class="board-wrong">✗ ${b.wrong} خاطئ</span>
+        </div>
       </div>
       <div style="flex:1"></div>
       <div class="board-pts">${b.pts} نقطة</div>
