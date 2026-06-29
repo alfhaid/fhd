@@ -695,7 +695,7 @@
   .board-row.podium-bronze .rank-num{
     font-size:24px;
   }
-  .board-name{flex:1; font-weight:800; font-size:15px; color:var(--chalk);}
+  .board-name{flex:1; font-weight:800; font-size:15px; color:var(--chalk); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; min-width:0;}
   .board-row.podium-gold .board-name{font-size:16px;}
   .board-pts{
     font-weight:900;
@@ -703,17 +703,29 @@
     color:var(--gold-bright);
     min-width:64px;
     text-align:left;
+    flex-shrink:0;
   }
   .board-sub{font-size:11px; color:var(--chalk-dim); display:flex; gap:10px;}
   .board-stats{
     display:flex;
-    gap:10px;
+    align-items:center;
+    flex-wrap:nowrap;
+    flex-shrink:0;
+    gap:8px;
     font-size:13px;
     margin-left:6px;
+    white-space:nowrap;
   }
   .board-correct{color:#7CD992; font-weight:800;}
   .board-wrong{color:#FF8A6E; font-weight:800;}
-  .stat-fanwins{color:var(--gold-bright); font-weight:800;}
+  .stat-fanwins{
+    color:var(--gold-bright);
+    font-weight:800;
+    font-size:13px;
+    display:inline-flex;
+    align-items:center;
+    line-height:1;
+  }
   .empty-board{
     text-align:center;
     padding:30px;
@@ -967,8 +979,14 @@ const ROUNDS = {
   r16: {
     label: "دور الـ١٦",
     matches: [
-      // أضف مباريات دور الـ16 هنا بنفس الشكل أعلاه بعد معرفة المتأهلين
-      // مثال: {id:101, home:"الفريق أ", homeCode:"XXX", away:"الفريق ب", awayCode:"YYY", venue:"...", date:"...", time:"...", status:"scheduled"}
+      {id:101, home:"كندا", homeCode:"CAN", away:"الفائز من مباراة 4", awayCode:"TBD", venue:"يُحدد لاحقاً", date:"السبت 4 يوليو", time:"يُحدد لاحقاً", status:"scheduled"},
+      {id:102, home:"الفائز من مباراة 2", homeCode:"TBD", away:"الفائز من مباراة 5", awayCode:"TBD", venue:"يُحدد لاحقاً", date:"الأحد 5 يوليو", time:"يُحدد لاحقاً", status:"scheduled"},
+      {id:103, home:"الفائز من مباراة 3", homeCode:"TBD", away:"الفائز من مباراة 6", awayCode:"TBD", venue:"يُحدد لاحقاً", date:"الأحد 5 يوليو", time:"يُحدد لاحقاً", status:"scheduled"},
+      {id:104, home:"الفائز من مباراة 7", homeCode:"TBD", away:"الفائز من مباراة 8", awayCode:"TBD", venue:"يُحدد لاحقاً", date:"الإثنين 6 يوليو", time:"يُحدد لاحقاً", status:"scheduled"},
+      {id:105, home:"الفائز من مباراة 12", homeCode:"TBD", away:"الفائز من مباراة 11", awayCode:"TBD", venue:"يُحدد لاحقاً", date:"الإثنين 6 يوليو", time:"يُحدد لاحقاً", status:"scheduled"},
+      {id:106, home:"الفائز من مباراة 15", homeCode:"TBD", away:"الفائز من مباراة 14", awayCode:"TBD", venue:"يُحدد لاحقاً", date:"الثلاثاء 7 يوليو", time:"يُحدد لاحقاً", status:"scheduled"},
+      {id:107, home:"الفائز من مباراة 10", homeCode:"TBD", away:"الفائز من مباراة 9", awayCode:"TBD", venue:"يُحدد لاحقاً", date:"الثلاثاء 7 يوليو", time:"يُحدد لاحقاً", status:"scheduled"},
+      {id:108, home:"الفائز من مباراة 13", homeCode:"TBD", away:"الفائز من مباراة 16", awayCode:"TBD", venue:"يُحدد لاحقاً", date:"الثلاثاء 7 يوليو", time:"يُحدد لاحقاً", status:"scheduled"}
     ]
   },
   qf: {
@@ -1025,6 +1043,7 @@ const FIFA_TO_ISO = {
 function flagEmoji(fifaCode){
   // England has no standard regional-indicator flag emoji; use St George's cross fallback
   if(fifaCode === "ENG") return "🏴\u{E0067}\u{E0062}\u{E0065}\u{E006E}\u{E0067}\u{E007F}";
+  if(fifaCode === "TBD") return "⏳";
   const iso = FIFA_TO_ISO[fifaCode];
   if(!iso || iso.length !== 2) return fifaCode;
   const codePoints = iso.toUpperCase().split("").map(c => 0x1F1E6 + c.charCodeAt(0) - 65);
