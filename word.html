@@ -3,10 +3,11 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>اخمّن الكلمة</title>
+<title>كلمة عزوز</title>
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box;margin:0;padding:0;}
-body{background:#111;color:#f0f0f0;font-family:system-ui,-apple-system,sans-serif;min-height:100vh;}
+body{background:#111;color:#f0f0f0;font-family:'Tajawal',system-ui,sans-serif;min-height:100vh;}
 
 /* ── Auth ── */
 #aw-auth{position:fixed;inset:0;background:#111;display:flex;align-items:center;justify-content:center;z-index:999;direction:rtl;}
@@ -21,15 +22,19 @@ body{background:#111;color:#f0f0f0;font-family:system-ui,-apple-system,sans-seri
 @keyframes aw-shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-7px)}75%{transform:translateX(7px)}}
 
 /* ── Main ── */
-#aw-main{display:none;max-width:480px;margin:0 auto;padding:.5rem 1rem 2rem;position:relative;}
+#aw-main{max-width:480px;margin:0 auto;padding:.5rem 1rem 2rem;position:relative;}
+#aw-main.hidden{display:none;}
 .aw-sb{position:absolute;top:8px;left:0;background:none;border:none;cursor:pointer;font-size:20px;opacity:.5;padding:0;}
 .aw-sb:hover{opacity:.9;}
 
 /* ── Balance bar ── */
-.aw-bal{display:flex;gap:16px;justify-content:center;align-items:center;background:#1a1a1a;border:0.5px solid #333;border-radius:10px;padding:8px 16px;margin-bottom:.6rem;}
-.aw-bi{display:flex;align-items:center;gap:5px;font-size:13px;color:#777;}
-.aw-bn{font-size:16px;font-weight:500;color:#f0f0f0;}
-.aw-div{width:0.5px;background:#333;height:20px;}
+.aw-bal{display:flex;margin-bottom:.75rem;direction:rtl;}
+.aw-bi{flex:1;text-align:center;padding:10px 0;}
+.aw-bi+.aw-bi{border-right:0.5px solid #2a2a2a;}
+.aw-bi-icon{font-size:14px;margin-bottom:2px;}
+.aw-bn{font-size:30px;font-weight:800;line-height:1;display:block;margin-bottom:3px;}
+.aw-bl-label{font-size:11px;color:#555;letter-spacing:.3px;}
+.aw-div{display:none;}
 
 /* ── Tiles ── */
 .aw-tile{width:54px;height:54px;border:2px solid #3d3d3d;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:500;background:#252525;color:#f0f0f0;transition:border-color .08s;will-change:transform;}
@@ -68,25 +73,29 @@ body{background:#111;color:#f0f0f0;font-family:system-ui,-apple-system,sans-seri
 </div>
 
 <!-- ══ GAME ══ -->
-<div id="aw-main">
+<div id="aw-main" class="hidden">
   <button class="aw-sb" id="aw-sb" onclick="awTS()" title="تشغيل/إيقاف الصوت">🔊</button>
 
-  <div style="text-align:center;padding:.6rem 0 .5rem;border-bottom:0.5px solid #2a2a2a;margin-bottom:.6rem;">
-    <span style="font-size:22px;font-weight:500;color:#fff;letter-spacing:.5px;">اخمّن الكلمة</span>
+  <div style="text-align:center;padding:.6rem 0 .5rem;border-bottom:0.5px solid #2a2a2a;margin-bottom:.75rem;">
+    <span style="font-size:24px;font-weight:800;color:#fff;letter-spacing:.5px;">كلمة عزوز</span>
   </div>
 
   <div class="aw-bal">
-    <div class="aw-bi">🎯 <span>رصيدك اليوم</span> <span class="aw-bn" id="aw-bt">—</span></div>
-    <div class="aw-div"></div>
-    <div class="aw-bi">🏆 <span>انتصاراتك</span> <span class="aw-bn" id="aw-bw">—</span></div>
-    <div class="aw-div"></div>
-    <div class="aw-bi">📚 <span>متبقية</span> <span class="aw-bn" id="aw-br">—</span></div>
-  </div>
-
-  <div style="display:flex;justify-content:center;gap:12px;margin-bottom:.5rem;direction:rtl;flex-wrap:wrap;">
-    <span style="font-size:11px;color:#444;display:flex;align-items:center;gap:3px;"><span style="display:inline-block;width:12px;height:12px;background:#4a8a45;border-radius:3px;"></span>مكانه صحيح</span>
-    <span style="font-size:11px;color:#444;display:flex;align-items:center;gap:3px;"><span style="display:inline-block;width:12px;height:12px;background:#c07820;border-radius:3px;"></span>موجود بمكان خطأ</span>
-    <span style="font-size:11px;color:#444;display:flex;align-items:center;gap:3px;"><span style="display:inline-block;width:12px;height:12px;background:#333;border-radius:3px;border:1px solid #444;"></span>غير موجود</span>
+    <div class="aw-bi">
+      <div class="aw-bi-icon">🎯</div>
+      <span class="aw-bn" id="aw-bt" style="color:#4a8a45;">—</span>
+      <div class="aw-bl-label">رصيدك اليوم</div>
+    </div>
+    <div class="aw-bi">
+      <div class="aw-bi-icon">🏆</div>
+      <span class="aw-bn" id="aw-bw" style="color:#c9a84c;">—</span>
+      <div class="aw-bl-label">انتصاراتك</div>
+    </div>
+    <div class="aw-bi">
+      <div class="aw-bi-icon">📚</div>
+      <span class="aw-bn" id="aw-br" style="color:#4a7aaa;">—</span>
+      <div class="aw-bl-label">كلمات متبقية</div>
+    </div>
   </div>
 
   <p id="aw-msg">&nbsp;</p>
@@ -170,7 +179,7 @@ function awCA(){
   if(v===AW_PASS){
     try{localStorage.setItem(AW_AK,'1');}catch(e){}
     document.getElementById('aw-auth').style.display='none';
-    document.getElementById('aw-main').style.display='';
+    document.getElementById('aw-main').classList.remove('hidden');
     awNG();
   } else {
     const i=document.getElementById('aw-ai');
@@ -194,10 +203,11 @@ function awPick(s){const a=AW_W.map((_,i)=>i).filter(i=>!s.usedWords.includes(i)
 // ── Balance ──
 function awRB(){
   const s=awCD(awGS()),rt=awRT(s);
-  document.getElementById('aw-bt').textContent=rt+'/'+AW_DL;
-  document.getElementById('aw-bw').textContent=s.wins+(s.totalPlayed>0?' ('+Math.round(s.wins/s.totalPlayed*100)+'%)':'');
+  const bt=document.getElementById('aw-bt');
+  bt.innerHTML=rt+'<span style="font-size:14px;font-weight:400;color:#444;">/'+AW_DL+'</span>';
+  bt.style.color=rt===0?'#c0392b':rt<=3?'#c07820':'#4a8a45';
+  document.getElementById('aw-bw').textContent=s.wins;
   document.getElementById('aw-br').textContent=awRem(s);
-  document.getElementById('aw-bt').style.color=rt===0?'#c0392b':rt<=3?'#c07820':'#f0f0f0';
 }
 
 // ── Game ──
@@ -209,14 +219,15 @@ function awNG(){
   awTI=idx;awTgt=AW_W[idx];
   awCur=[];awAtt=[];awOver=false;awLocked=false;
   awSM('');
-  document.getElementById('aw-ga').style.display='';
+  document.getElementById('aw-ga').style.display='flex';
+  document.getElementById('aw-ga').style.flexDirection='column';
   document.getElementById('aw-bl').style.display='none';
   awBKB();awRG();awRB();
 }
 
 function awSBL(s){
   document.getElementById('aw-ga').style.display='none';
-  document.getElementById('aw-bl').style.display='';
+  document.getElementById('aw-bl').style.display='block';
   document.getElementById('aw-blm').textContent='اليوم لعبت '+s.dailyCount+' لعبات وربحت '+s.wins+' — تعال بكرة وعندك '+AW_DL+' رصيد جديد 🎮';
   awRB();
 }
@@ -328,7 +339,7 @@ function awUSK(l,r){
 
 // ── Physical keyboard ──
 document.addEventListener('keydown',e=>{
-  if(document.getElementById('aw-auth').style.display!=='none')return;
+  if(document.getElementById('aw-main').classList.contains('hidden'))return;
   if(e.key==='Backspace')awDel();
   else if(AW_ALL.includes(e.key))awAdd(e.key);
 });
@@ -338,7 +349,7 @@ document.addEventListener('keydown',e=>{
   let ok=false;try{ok=localStorage.getItem(AW_AK)==='1';}catch(e){}
   if(ok){
     document.getElementById('aw-auth').style.display='none';
-    document.getElementById('aw-main').style.display='';
+    document.getElementById('aw-main').classList.remove('hidden');
     awNG();
   } else {
     setTimeout(()=>document.getElementById('aw-ai').focus(),100);
