@@ -2,12 +2,13 @@
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>كلمة عزوز</title>
 <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box;margin:0;padding:0;}
-body{background:#f5f7f6;color:#1a2e2a;font-family:'Tajawal',system-ui,sans-serif;min-height:100vh;}
+body{background:#f5f7f6;color:#1a2e2a;font-family:'Tajawal',system-ui,sans-serif;min-height:100vh;overflow-x:hidden;}
+html{touch-action:manipulation;}
 
 /* ── Colors ──
    Teal  : #1e8a78  (correct)
@@ -23,13 +24,13 @@ body{background:#f5f7f6;color:#1a2e2a;font-family:'Tajawal',system-ui,sans-serif
 .aw-ai:focus{border-color:#1e8a78;}
 .aw-ai.shake{animation:aw-shake .3s ease;}
 .aw-eye{position:absolute;left:10px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:#8aada8;font-size:16px;padding:0;}
-.aw-ab{width:100%;height:44px;background:#1e8a78;color:#fff;border:none;border-radius:10px;font-size:16px;font-family:inherit;font-weight:700;cursor:pointer;margin-top:4px;transition:opacity .1s;}
+.aw-ab{width:100%;height:44px;background:#1e8a78;color:#fff;border:none;border-radius:10px;font-size:16px;font-family:inherit;font-weight:700;cursor:pointer;margin-top:4px;transition:opacity .1s;touch-action:manipulation;-webkit-tap-highlight-color:transparent;}
 .aw-ab:hover{opacity:.88;}
 .aw-ae{font-size:12px;color:#e07530;min-height:18px;margin-top:6px;}
 @keyframes aw-shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-7px)}75%{transform:translateX(7px)}}
 
 /* ── Main ── */
-#aw-main{max-width:460px;margin:0 auto;padding:.75rem 1rem 2rem;position:relative;}
+#aw-main{max-width:460px;margin:0 auto;padding:.75rem 1rem 2rem;position:relative;overflow-x:hidden;}
 #aw-main.hidden{display:none;}
 .aw-sb{background:none;border:none;cursor:pointer;font-size:20px;opacity:.5;padding:0;}
 .aw-sb:hover{opacity:.8;}
@@ -51,12 +52,24 @@ body{background:#f5f7f6;color:#1a2e2a;font-family:'Tajawal',system-ui,sans-serif
 .aw-tile.absent{background:#c8d4d0;border-color:#c8d4d0;color:#8aada8;}
 
 /* ── Keyboard ── */
-.aw-key{height:44px;min-width:33px;border:1.5px solid #d4e4e0;border-radius:8px;background:#fff;color:#1a2e2a;cursor:pointer;font-family:inherit;font-size:15px;font-weight:600;padding:0 4px;transition:background .1s;}
+.aw-key{
+  height:44px;
+  width:calc((100vw - 2rem - 11 * 3px) / 12);
+  min-width:unset;
+  max-width:40px;
+  border:1.5px solid #d4e4e0;border-radius:8px;
+  background:#fff;color:#1a2e2a;cursor:pointer;
+  font-family:inherit;font-size:clamp(11px,3.5vw,15px);
+  font-weight:600;padding:0;
+  touch-action:manipulation;
+  transition:background .1s;
+  -webkit-tap-highlight-color:transparent;
+}
 .aw-key:hover{background:#eaf4f2;}
 .aw-key.correct{background:#1e8a78;border-color:#1e8a78;color:#fff;}
 .aw-key.present{background:#e07530;border-color:#e07530;color:#fff;}
 .aw-key.absent{background:#e0e8e6;border-color:#c8d4d0;color:#aac4be;}
-.aw-key-del{min-width:50px;font-size:16px;}
+.aw-key-del{width:calc((100vw - 2rem - 11 * 3px) / 12 * 1.5);max-width:52px;font-size:clamp(13px,4vw,16px);}
 
 #aw-msg{font-size:13px;color:#8aada8;min-height:20px;text-align:center;direction:rtl;margin:.2rem 0 .5rem;font-weight:500;}
 </style>
@@ -113,7 +126,7 @@ body{background:#f5f7f6;color:#1a2e2a;font-family:'Tajawal',system-ui,sans-serif
 
   <div id="aw-ga">
     <div id="aw-grid" style="display:flex;flex-direction:column;align-items:center;gap:5px;margin-bottom:.75rem;direction:rtl;"></div>
-    <div id="aw-kb" style="display:flex;flex-direction:column;align-items:center;gap:4px;direction:ltr;"></div>
+    <div id="aw-kb" style="display:flex;flex-direction:column;align-items:center;gap:4px;direction:ltr;width:100%;padding:0 0.5rem;"></div>
     <div style="text-align:center;margin-top:.85rem;">
       <button class="aw-key" onclick="awNG()" style="min-width:100px;height:36px;font-size:13px;">لعبة جديدة</button>
     </div>
@@ -429,7 +442,7 @@ function awBKB(){
   const kb=document.getElementById('aw-kb');kb.innerHTML='';
   Object.keys(awKE).forEach(k=>delete awKE[k]);
   for(const row of AW_KB){
-    const rowEl=document.createElement('div');rowEl.style='display:flex;gap:3px;justify-content:center;';
+    const rowEl=document.createElement('div');rowEl.style='display:flex;gap:3px;justify-content:center;flex-wrap:nowrap;';
     for(const key of row){
       const btn=document.createElement('button');btn.className='aw-key';
       if(key==='DEL'){btn.textContent='⌫';btn.classList.add('aw-key-del');btn.onclick=awDel;}
