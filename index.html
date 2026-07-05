@@ -54,9 +54,7 @@ html{touch-action:manipulation;}
 /* ── Keyboard ── */
 .aw-key{
   height:44px;
-  width:calc((100vw - 2rem - 11 * 3px) / 12);
-  min-width:unset;
-  max-width:40px;
+  flex:1;min-width:0;
   border:1.5px solid #d4e4e0;border-radius:8px;
   background:#fff;color:#1a2e2a;cursor:pointer;
   font-family:inherit;font-size:clamp(11px,3.5vw,15px);
@@ -69,7 +67,7 @@ html{touch-action:manipulation;}
 .aw-key.correct{background:#1e8a78;border-color:#1e8a78;color:#fff;}
 .aw-key.present{background:#e07530;border-color:#e07530;color:#fff;}
 .aw-key.absent{background:#e0e8e6;border-color:#c8d4d0;color:#aac4be;}
-.aw-key-del{width:calc((100vw - 2rem - 11 * 3px) / 12 * 1.5);max-width:52px;font-size:clamp(13px,4vw,16px);}
+.aw-key-del{flex:1.5;font-size:clamp(13px,4vw,16px);}
 
 #aw-msg{font-size:13px;color:#8aada8;min-height:20px;text-align:center;direction:rtl;margin:.2rem 0 .5rem;font-weight:500;}
 </style>
@@ -126,7 +124,7 @@ html{touch-action:manipulation;}
 
   <div id="aw-ga">
     <div id="aw-grid" style="display:flex;flex-direction:column;align-items:center;gap:5px;margin-bottom:.75rem;direction:rtl;"></div>
-    <div id="aw-kb" style="display:flex;flex-direction:column;align-items:center;gap:4px;direction:ltr;width:100%;padding:0 0.5rem;"></div>
+    <div id="aw-kb" style="display:flex;flex-direction:column;gap:3px;direction:ltr;width:100%;padding:0 0.25rem;"></div>
     <div style="text-align:center;margin-top:.85rem;">
       <button class="aw-key" onclick="awNG()" style="min-width:100px;height:36px;font-size:13px;">لعبة جديدة</button>
     </div>
@@ -442,7 +440,7 @@ function awBKB(){
   const kb=document.getElementById('aw-kb');kb.innerHTML='';
   Object.keys(awKE).forEach(k=>delete awKE[k]);
   for(const row of AW_KB){
-    const rowEl=document.createElement('div');rowEl.style='display:flex;gap:3px;justify-content:center;flex-wrap:nowrap;';
+    const rowEl=document.createElement('div');rowEl.style='display:flex;gap:2px;width:100%;';
     for(const key of row){
       const btn=document.createElement('button');btn.className='aw-key';
       if(key==='DEL'){btn.textContent='⌫';btn.classList.add('aw-key-del');btn.onclick=awDel;}
