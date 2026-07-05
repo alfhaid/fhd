@@ -1,0 +1,786 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ساعة هشام</title>
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg:        #0d0b1e;
+    --surface:   rgba(255,255,255,.06);
+    --border:    rgba(255,255,255,.1);
+    --text:      #ffffff;
+    --muted:     rgba(255,255,255,.45);
+    --dim:       rgba(255,255,255,.2);
+    --purple:    #a78bfa;
+    --blue:      #60a5fa;
+    --green:     #4ade80;
+    --orange:    #fb923c;
+    --red:       #f87171;
+    --grad:      linear-gradient(110deg,#a78bfa,#60a5fa);
+    --grad-stop: linear-gradient(110deg,#f87171,#fb923c);
+    --radius:    14px;
+  }
+
+  html, body {
+    min-height: 100vh;
+    background: var(--bg);
+    font-family: 'Tajawal', sans-serif;
+    color: var(--text);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 60% 50% at 20% 20%, rgba(167,139,250,.12) 0%, transparent 70%),
+      radial-gradient(ellipse 50% 40% at 80% 80%, rgba(96,165,250,.1) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .app {
+    width: 100%;
+    max-width: 420px;
+    padding: 20px 16px 32px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0;
+    position: relative;
+  }
+
+  /* ── SCREENS ── */
+  .screen { display: none; flex-direction: column; align-items: center; gap: 20px; width: 100%; }
+  .screen.active { display: flex; }
+
+  /* ── SETUP ── */
+  .logo {
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0;
+    color: var(--muted);
+    margin-bottom: 4px;
+  }
+  .logo span { background: var(--grad); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+
+  .setup-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 24px;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    backdrop-filter: blur(8px);
+  }
+
+  .field-label { font-size: 12px; color: var(--muted); margin-bottom: 6px; }
+
+  .count-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: rgba(255,255,255,.04);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 10px 14px;
+    justify-content: space-between;
+  }
+  .count-row span { font-size: 14px; color: var(--muted); }
+  .count-controls { display: flex; align-items: center; gap: 12px; }
+  .count-btn {
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--text);
+    font-size: 18px;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: background .15s;
+    line-height: 1;
+  }
+  .count-btn:hover { background: rgba(255,255,255,.12); }
+  .count-val { font-size: 22px; font-weight: 700; color: var(--text); min-width: 24px; text-align: center; }
+
+  .names-list { display: flex; flex-direction: column; gap: 8px; }
+  .name-input {
+    width: 100%;
+    background: rgba(255,255,255,.05);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 11px 14px;
+    color: var(--text);
+    font-family: 'Tajawal', sans-serif;
+    font-size: 14px;
+    text-align: right;
+    outline: none;
+    transition: border-color .2s;
+  }
+  .name-input::placeholder { color: var(--dim); }
+  .name-input:focus { border-color: rgba(167,139,250,.5); }
+
+  /* ── BUTTONS ── */
+  .btn {
+    width: 100%;
+    padding: 14px;
+    border: none;
+    border-radius: var(--radius);
+    font-family: 'Tajawal', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: opacity .2s, transform .1s;
+    position: relative;
+    overflow: hidden;
+  }
+  .btn:active { transform: scale(.98); }
+  .btn:disabled { opacity: .35; cursor: not-allowed; transform: none; }
+  .btn-primary { background: var(--grad); color: #fff; }
+  .btn-stop    { background: var(--grad-stop); color: #fff; }
+  .btn-ghost {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--muted);
+    font-size: 14px;
+  }
+  .btn-ghost:hover { color: var(--text); background: rgba(255,255,255,.1); }
+
+  /* ── GAME SCREEN ── */
+  .badge {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--muted);
+    font-size: 12px;
+    padding: 5px 14px;
+    border-radius: 20px;
+  }
+
+  /* Arc */
+  .arc-wrap {
+    position: relative;
+    width: 200px;
+    height: 200px;
+    flex-shrink: 0;
+  }
+  .arc-wrap svg {
+    width: 200px;
+    height: 200px;
+    transform: rotate(-90deg);
+  }
+  .arc-bg   { fill: none; stroke: rgba(255,255,255,.07); stroke-width: 10; }
+  .arc-tick { fill: none; stroke: rgba(255,255,255,.12); stroke-width: 2; }
+  .arc-prog {
+    fill: none;
+    stroke: url(#gArc);
+    stroke-width: 10;
+    stroke-linecap: round;
+    transition: stroke-dashoffset .5s cubic-bezier(.4,0,.2,1);
+  }
+  .arc-center {
+    position: absolute; inset: 0;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    gap: 0;
+  }
+  .arc-micro { font-size: 11px; color: var(--muted); letter-spacing: 1px; }
+  .arc-num   { font-size: 44px; font-weight: 900; color: var(--text); line-height: 1; font-variant-numeric: tabular-nums; }
+  .arc-unit  { font-size: 13px; color: var(--dim); margin-top: 2px; }
+
+  /* tick marks */
+  .tick-marks { position: absolute; inset: 0; pointer-events: none; }
+
+  /* Player cards */
+  .players-row { display: flex; gap: 8px; width: 100%; }
+  .pcard {
+    flex: 1;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 12px 8px;
+    text-align: center;
+    transition: all .3s;
+    position: relative;
+    overflow: hidden;
+  }
+  .pcard::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    transition: opacity .3s;
+  }
+  .pcard.is-active { border-color: rgba(167,139,250,.55); background: rgba(167,139,250,.1); }
+  .pcard.is-active::before { background: radial-gradient(ellipse at 50% 0%, rgba(167,139,250,.15), transparent 70%); opacity: 1; }
+  .pcard.is-win  { border-color: rgba(74,222,128,.4); background: rgba(74,222,128,.08); }
+  .pcard.is-lose { border-color: rgba(248,113,113,.3); background: rgba(248,113,113,.06); }
+  .pcard .p-name { font-size: 11px; color: var(--muted); margin-bottom: 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .pcard .p-val  { font-size: 16px; font-weight: 700; color: var(--text); font-variant-numeric: tabular-nums; }
+  .pcard.is-active .p-val { color: var(--purple); }
+  .pcard.is-win  .p-val  { color: var(--green); font-size: 13px; }
+  .pcard.is-lose .p-val  { color: var(--red);   font-size: 13px; }
+
+  /* Result reveal */
+  .result-reveal {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 14px 20px;
+    text-align: center;
+    width: 100%;
+    min-height: 54px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+  }
+  .result-reveal .r-time { font-size: 28px; font-weight: 700; color: var(--purple); font-variant-numeric: tabular-nums; }
+  .result-reveal .r-sub  { font-size: 12px; color: var(--muted); }
+  .result-reveal.hidden  { opacity: 0; }
+
+  /* Status */
+  .status { font-size: 13px; color: var(--muted); text-align: center; min-height: 20px; }
+
+  /* ── TAP BUTTON ── */
+  .tap-wrap {
+    position: relative;
+    width: 160px;
+    height: 160px;
+    cursor: pointer;
+    user-select: none;
+    flex-shrink: 0;
+  }
+  .tap-wrap.disabled { pointer-events: none; opacity: .4; }
+  .tap-spikes {
+    position: absolute;
+    inset: -28px;
+    animation: tapSpin 18s linear infinite;
+  }
+  @keyframes tapSpin { to { transform: rotate(360deg); } }
+  .tap-ring1 { position: absolute; inset: 0;     border-radius: 50%; border: 1.5px solid rgba(167,139,250,.2); animation: tapPulse 2.4s ease-in-out infinite; }
+  .tap-ring2 { position: absolute; inset: -10px; border-radius: 50%; border: 1px solid rgba(96,165,250,.12);  animation: tapPulse 2.4s ease-in-out infinite .6s; }
+  .tap-ring3 { position: absolute; inset: -20px; border-radius: 50%; border: 1px solid rgba(167,139,250,.06); animation: tapPulse 2.4s ease-in-out infinite 1.2s; }
+  @keyframes tapPulse {
+    0%,100% { opacity:.4; transform:scale(1); }
+    50%      { opacity:1;  transform:scale(1.03); }
+  }
+  .tap-core {
+    position: absolute; inset: 0; border-radius: 50%;
+    background: radial-gradient(circle at 40% 35%, #2a1f5e, #0d0b1e);
+    border: 2px solid rgba(167,139,250,.5);
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center; gap: 3px;
+    transition: transform .12s, border-color .3s, box-shadow .3s;
+    box-shadow: 0 0 28px rgba(167,139,250,.22), 0 0 55px rgba(167,139,250,.08), inset 0 0 18px rgba(167,139,250,.07);
+  }
+  .tap-wrap:active .tap-core { transform: scale(.94); }
+  .tap-core.mode-stop {
+    border-color: rgba(248,113,113,.6);
+    box-shadow: 0 0 28px rgba(248,113,113,.28), 0 0 55px rgba(248,113,113,.1);
+  }
+  .tap-label { font-size: 16px; font-weight: 700; color: #fff; letter-spacing: 0; }
+  .tap-sub   { font-size: 10px; color: rgba(167,139,250,.7); letter-spacing: 0; }
+
+  /* ── RESULTS SCREEN ── */
+  .results-header {
+    text-align: center;
+    width: 100%;
+  }
+  .results-header .rh-sub  { font-size: 12px; color: var(--muted); margin-bottom: 4px; }
+  .results-header .rh-main { font-size: 17px; font-weight: 700; }
+
+  .podium-wrap { display: flex; gap: 8px; width: 100%; align-items: flex-end; justify-content: center; }
+  .podium-card {
+    flex: 1;
+    border-radius: var(--radius);
+    padding: 14px 8px;
+    text-align: center;
+    border: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+  }
+  .podium-card.p-1st { background: rgba(167,139,250,.15); border-color: rgba(167,139,250,.5); order: 2; padding-top: 20px; }
+  .podium-card.p-2nd { background: rgba(251,191,36,.08); border-color: rgba(251,191,36,.3); order: 1; }
+  .podium-card.p-3rd { background: rgba(248,113,113,.07); border-color: rgba(248,113,113,.25); order: 3; }
+  .podium-card .medal { font-size: 24px; }
+  .podium-card .p-name-r { font-size: 13px; font-weight: 600; color: var(--text); }
+  .podium-card .p-time-r  { font-size: 15px; font-weight: 700; font-variant-numeric: tabular-nums; }
+  .podium-card .p-diff-r  { font-size: 11px; color: var(--muted); }
+  .p-1st .p-time-r { color: var(--purple); }
+  .p-2nd .p-time-r { color: #fbbf24; }
+  .p-3rd .p-time-r { color: var(--red); }
+
+  .full-list { display: flex; flex-direction: column; gap: 6px; width: 100%; }
+  .list-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 11px 14px;
+  }
+  .list-row .lr-rank { font-size: 11px; color: var(--dim); width: 18px; }
+  .list-row .lr-name { flex: 1; font-size: 14px; color: var(--text); }
+  .list-row .lr-time { font-size: 14px; font-weight: 600; font-variant-numeric: tabular-nums; color: var(--muted); }
+  .list-row .lr-diff { font-size: 12px; font-weight: 600; }
+  .list-row.rank-1 .lr-diff { color: var(--purple); }
+  .list-row.rank-2 .lr-diff { color: #fbbf24; }
+  .list-row.rank-3 .lr-diff { color: var(--red); }
+
+  /* 4+ players: no podium, just list */
+  .no-podium .podium-wrap { display: none; }
+
+  @media (max-width: 380px) {
+    .arc-wrap, .arc-wrap svg { width: 175px; height: 175px; }
+    .arc-num { font-size: 38px; }
+  }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- ═══ SETUP SCREEN ═══ -->
+  <div class="screen active" id="screenSetup">
+
+    <!-- Icon 1: Classic clock with gradient arc -->
+    <svg width="90" height="90" viewBox="0 0 90 90" xmlns="http://www.w3.org/2000/svg" style="margin-bottom:-6px">
+      <defs>
+        <linearGradient id="iGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="#a78bfa"/>
+          <stop offset="100%" stop-color="#60a5fa"/>
+        </linearGradient>
+      </defs>
+      <!-- outer glow ring -->
+      <circle cx="45" cy="45" r="38" fill="none" stroke="url(#iGrad)" stroke-width="1" opacity=".18"/>
+      <!-- track -->
+      <circle cx="45" cy="45" r="30" fill="none" stroke="rgba(255,255,255,.07)" stroke-width="9"/>
+      <!-- arc progress -->
+      <circle cx="45" cy="45" r="30" fill="none" stroke="url(#iGrad)" stroke-width="9"
+        stroke-linecap="round" stroke-dasharray="188" stroke-dashoffset="47"
+        transform="rotate(-90 45 45)"/>
+      <!-- major ticks -->
+      <g stroke="rgba(255,255,255,.35)" stroke-width="2" stroke-linecap="round">
+        <line x1="45" y1="8"  x2="45" y2="14"/>
+        <line x1="82" y1="45" x2="76" y2="45"/>
+        <line x1="45" y1="82" x2="45" y2="76"/>
+        <line x1="8"  y1="45" x2="14" y2="45"/>
+      </g>
+      <!-- minor ticks -->
+      <g stroke="rgba(255,255,255,.15)" stroke-width="1" stroke-linecap="round">
+        <line x1="68.5" y1="12.5" x2="65.5" y2="17.7"/>
+        <line x1="77.5" y1="21.5" x2="72.3" y2="24.5"/>
+        <line x1="77.5" y1="68.5" x2="72.3" y2="65.5"/>
+        <line x1="68.5" y1="77.5" x2="65.5" y2="72.3"/>
+        <line x1="21.5" y1="77.5" x2="24.5" y2="72.3"/>
+        <line x1="12.5" y1="68.5" x2="17.7" y2="65.5"/>
+        <line x1="12.5" y1="21.5" x2="17.7" y2="24.5"/>
+        <line x1="21.5" y1="12.5" x2="24.5" y2="17.7"/>
+      </g>
+      <!-- minute hand -->
+      <line x1="45" y1="45" x2="45" y2="22" stroke="#60a5fa" stroke-width="2.5" stroke-linecap="round"/>
+      <!-- hour hand -->
+      <line x1="45" y1="45" x2="59" y2="53" stroke="#a78bfa" stroke-width="2" stroke-linecap="round"/>
+      <!-- center dot -->
+      <circle cx="45" cy="45" r="3.5" fill="#a78bfa"/>
+    </svg>
+
+    <div class="logo"><span>ساعة</span> هشام</div>
+    <div class="setup-card">
+      <div>
+        <div class="field-label">عدد المتسابقين</div>
+        <div class="count-row">
+          <span>المتسابقون</span>
+          <div class="count-controls">
+            <button class="count-btn" onclick="changeCount(-1)">−</button>
+            <div class="count-val" id="countVal">2</div>
+            <button class="count-btn" onclick="changeCount(1)">+</button>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="field-label">أسماء المتسابقين</div>
+        <div class="names-list" id="namesList"></div>
+      </div>
+    </div>
+    <button class="btn btn-primary" onclick="startGame()">ابدأ اللعبة</button>
+  </div>
+
+  <!-- ═══ GAME SCREEN ═══ -->
+  <div class="screen" id="screenGame">
+    <div class="badge" id="gameBadge">المتسابق ١ من ٢</div>
+
+    <div class="arc-wrap">
+      <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="gArc" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stop-color="#a78bfa"/>
+            <stop offset="100%" stop-color="#60a5fa"/>
+          </linearGradient>
+        </defs>
+        <!-- tick marks -->
+        <g id="tickGroup"></g>
+        <!-- track -->
+        <circle class="arc-bg" cx="100" cy="100" r="82"/>
+        <!-- progress -->
+        <circle class="arc-prog" id="arcProg" cx="100" cy="100" r="82"/>
+      </svg>
+      <div class="arc-center">
+        <div class="arc-micro" id="arcMicro">الهدف</div>
+        <div class="arc-num"  id="arcNum">—</div>
+        <div class="arc-unit">ثانية</div>
+      </div>
+    </div>
+
+    <div class="players-row" id="playersRow"></div>
+    <div class="result-reveal hidden" id="resultReveal">
+      <div class="r-time" id="revealTime">—</div>
+      <div class="r-sub"  id="revealSub">—</div>
+    </div>
+    <div class="status" id="statusTxt">استعد...</div>
+
+    <div class="tap-wrap disabled" id="tapBtn" onclick="handleBtn()">
+      <svg class="tap-spikes" viewBox="0 0 216 216" xmlns="http://www.w3.org/2000/svg"><g id="tapSpk" transform="translate(108,108)"></g></svg>
+      <div class="tap-ring3"></div>
+      <div class="tap-ring2"></div>
+      <div class="tap-ring1"></div>
+      <div class="tap-core" id="tapCore">
+        <div class="tap-label" id="tapLabel">ابدأ</div>
+        <div class="tap-sub"   id="tapSub">اضغط للبدء</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ RESULTS SCREEN ═══ -->
+  <div class="screen" id="screenResults">
+
+    <!-- Icon 4: Target + crosshair -->
+    <svg width="80" height="80" viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg" style="margin-bottom:-4px">
+      <defs>
+        <linearGradient id="rGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%" stop-color="#a78bfa"/>
+          <stop offset="100%" stop-color="#60a5fa"/>
+        </linearGradient>
+      </defs>
+      <!-- rings -->
+      <circle cx="40" cy="40" r="32" fill="none" stroke="rgba(167,139,250,.18)" stroke-width="1.5"/>
+      <circle cx="40" cy="40" r="22" fill="none" stroke="rgba(167,139,250,.3)"  stroke-width="1.5"/>
+      <circle cx="40" cy="40" r="12" fill="none" stroke="rgba(167,139,250,.5)"  stroke-width="1.5"/>
+      <!-- arc progress on outer -->
+      <circle cx="40" cy="40" r="32" fill="none" stroke="url(#rGrad)" stroke-width="3.5"
+        stroke-linecap="round" stroke-dasharray="201" stroke-dashoffset="75"
+        transform="rotate(-90 40 40)"/>
+      <!-- crosshair lines -->
+      <line x1="40" y1="4"  x2="40" y2="22" stroke="#60a5fa" stroke-width="1.5" stroke-linecap="round"/>
+      <line x1="40" y1="58" x2="40" y2="76" stroke="#60a5fa" stroke-width="1.5" stroke-linecap="round"/>
+      <line x1="4"  y1="40" x2="22" y2="40" stroke="#60a5fa" stroke-width="1.5" stroke-linecap="round"/>
+      <line x1="58" y1="40" x2="76" y2="40" stroke="#60a5fa" stroke-width="1.5" stroke-linecap="round"/>
+      <!-- center -->
+      <circle cx="40" cy="40" r="5" fill="#a78bfa"/>
+    </svg>
+
+    <div class="results-header">
+      <div class="rh-sub">النتائج النهائية — الهدف: <span id="finalTarget">—</span></div>
+      <div class="rh-main">🏆 الأقرب يفوز</div>
+    </div>
+    <div class="podium-wrap" id="podiumWrap"></div>
+    <div class="full-list"   id="fullList"></div>
+    <button class="btn btn-ghost" onclick="resetGame()">العب مجدداً</button>
+  </div>
+
+</div>
+
+<script>
+// ── STATE ──────────────────────────────────
+const C = 2 * Math.PI * 82; // circumference
+let playerCount = 2;
+let players     = [];
+let target      = 0;
+let currentIdx  = 0;
+let results     = [];
+let phase       = 'idle';   // idle | ready | running | done
+let startTime   = 0;
+let cdInterval  = null;
+
+// ── SETUP ──────────────────────────────────
+function buildNames() {
+  const list = document.getElementById('namesList');
+  list.innerHTML = '';
+  for (let i = 0; i < playerCount; i++) {
+    const inp = document.createElement('input');
+    inp.className   = 'name-input';
+    inp.type        = 'text';
+    inp.placeholder = 'اسم المتسابق ' + (i + 1);
+    inp.id          = 'n' + i;
+    list.appendChild(inp);
+  }
+}
+buildNames();
+
+function changeCount(d) {
+  playerCount = Math.min(6, Math.max(1, playerCount + d));
+  document.getElementById('countVal').textContent = playerCount;
+  buildNames();
+}
+
+function startGame() {
+  players = [];
+  for (let i = 0; i < playerCount; i++) {
+    const el = document.getElementById('n' + i);
+    players.push(el && el.value.trim() ? el.value.trim() : 'لاعب ' + (i + 1));
+  }
+  currentIdx = 0;
+  results    = [];
+  target     = randomTarget();
+  showScreen('screenGame');
+  buildSpikes();
+  buildTickMarks();
+  setArc(target);
+  document.getElementById('arcNum').textContent  = target.toFixed(1);
+  buildPlayerCards();
+  beginCountdown();
+}
+
+function randomTarget() {
+  return (Math.floor(Math.random() * 8) + 2) + Math.round(Math.random() * 9) / 10;
+}
+
+function buildSpikes() {
+  const g = document.getElementById('tapSpk');
+  if (g.childElementCount > 0) return;
+  for (let i = 0; i < 28; i++) {
+    const ang = (i / 28) * 2 * Math.PI;
+    const r0 = 80, r1 = i % 4 === 0 ? 98 : i % 2 === 0 ? 90 : 84;
+    const line = document.createElementNS('http://www.w3.org/2000/svg','line');
+    line.setAttribute('x1',(Math.cos(ang)*r0).toFixed(1));
+    line.setAttribute('y1',(Math.sin(ang)*r0).toFixed(1));
+    line.setAttribute('x2',(Math.cos(ang)*r1).toFixed(1));
+    line.setAttribute('y2',(Math.sin(ang)*r1).toFixed(1));
+    line.setAttribute('stroke',`rgba(167,139,250,${i%4===0?.7:i%2===0?.4:.2})`);
+    line.setAttribute('stroke-width', i%4===0?'2':'1');
+    line.setAttribute('stroke-linecap','round');
+    g.appendChild(line);
+    if (i % 7 === 0) {
+      const r2 = r1 + 7, dot = document.createElementNS('http://www.w3.org/2000/svg','circle');
+      dot.setAttribute('cx',(Math.cos(ang)*r2).toFixed(1));
+      dot.setAttribute('cy',(Math.sin(ang)*r2).toFixed(1));
+      dot.setAttribute('r','2');
+      dot.setAttribute('fill','rgba(96,165,250,.5)');
+      g.appendChild(dot);
+    }
+  }
+}
+
+// ── ARC ────────────────────────────────────
+function setArc(sec) {
+  const MAX = 10;
+  const ratio  = Math.min(sec / MAX, 1);
+  const offset = C * (1 - ratio);
+  const prog   = document.getElementById('arcProg');
+  prog.style.strokeDasharray  = C;
+  prog.style.strokeDashoffset = offset;
+}
+
+function buildTickMarks() {
+  const g = document.getElementById('tickGroup');
+  g.innerHTML = '';
+  const cx = 100, cy = 100, r = 82;
+  for (let i = 0; i < 60; i++) {
+    const ang   = (i / 60) * 2 * Math.PI - Math.PI / 2;
+    const isMaj = i % 5 === 0;
+    const r0    = isMaj ? r - 10 : r - 6;
+    const x1    = cx + r * Math.cos(ang);
+    const y1    = cy + r * Math.sin(ang);
+    const x2    = cx + r0 * Math.cos(ang);
+    const y2    = cy + r0 * Math.sin(ang);
+    const line  = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+    line.setAttribute('x1', x1.toFixed(2));
+    line.setAttribute('y1', y1.toFixed(2));
+    line.setAttribute('x2', x2.toFixed(2));
+    line.setAttribute('y2', y2.toFixed(2));
+    line.setAttribute('stroke', isMaj ? 'rgba(255,255,255,.2)' : 'rgba(255,255,255,.08)');
+    line.setAttribute('stroke-width', isMaj ? '2' : '1');
+    g.appendChild(line);
+  }
+}
+
+// ── PLAYER CARDS ──────────────────────────
+function buildPlayerCards() {
+  const row = document.getElementById('playersRow');
+  row.innerHTML = '';
+  players.forEach((name, i) => {
+    const card = document.createElement('div');
+    card.className = 'pcard' + (i === 0 ? ' is-active' : '');
+    card.id = 'pc' + i;
+    card.innerHTML = `<div class="p-name">${name}</div><div class="p-val" id="pv${i}">▶</div>`;
+    row.appendChild(card);
+  });
+  // If too many, shrink font
+  if (players.length > 4) {
+    row.querySelectorAll('.p-name').forEach(el => el.style.fontSize = '10px');
+    row.querySelectorAll('.p-val').forEach(el => el.style.fontSize = '13px');
+  }
+}
+
+function updateCards() {
+  players.forEach((_, i) => {
+    const card = document.getElementById('pc' + i);
+    const val  = document.getElementById('pv' + i);
+    card.className = 'pcard';
+    if (i < currentIdx && results[i]) {
+      const diff = Math.abs(results[i].time - target);
+      card.classList.add(diff <= 0.5 ? 'is-win' : 'is-lose');
+      val.textContent = results[i].time.toFixed(2) + 'ث';
+    } else if (i === currentIdx) {
+      card.classList.add('is-active');
+      val.textContent = phase === 'running' ? '⏱' : '▶';
+    } else {
+      val.textContent = '—';
+    }
+  });
+}
+
+// ── COUNTDOWN ─────────────────────────────
+function setTapBtn({ label, sub, disabled, stop }) {
+  const wrap  = document.getElementById('tapBtn');
+  const core  = document.getElementById('tapCore');
+  document.getElementById('tapLabel').textContent = label;
+  document.getElementById('tapSub').textContent   = sub;
+  wrap.classList.toggle('disabled', !!disabled);
+  core.classList.toggle('mode-stop', !!stop);
+}
+
+function beginCountdown() {
+  const status = document.getElementById('statusTxt');
+  const badge  = document.getElementById('gameBadge');
+  badge.textContent = 'المتسابق ' + (currentIdx + 1) + ' من ' + players.length;
+  document.getElementById('resultReveal').className = 'result-reveal hidden';
+  phase = 'wait-cd';
+  setTapBtn({ label: '...', sub: 'جاري التحضير', disabled: true, stop: false });
+  let cd = 3;
+  status.textContent = 'يبدأ خلال ' + cd + '...';
+  clearInterval(cdInterval);
+  cdInterval = setInterval(() => {
+    cd--;
+    if (cd <= 0) {
+      clearInterval(cdInterval);
+      status.textContent = 'اضغط ابدأ عندما تكون مستعداً';
+      setTapBtn({ label: 'ابدأ', sub: 'اضغط للبدء', disabled: false, stop: false });
+      phase = 'ready';
+    } else {
+      status.textContent = 'يبدأ خلال ' + cd + '...';
+    }
+  }, 1000);
+}
+
+// ── MAIN BUTTON ───────────────────────────
+function handleBtn() {
+  const status = document.getElementById('statusTxt');
+
+  if (phase === 'ready') {
+    phase     = 'running';
+    startTime = performance.now();
+    setTapBtn({ label: 'إيقاف', sub: 'اضغط للإيقاف', disabled: false, stop: true });
+    status.textContent = 'المؤقت يعمل — اضغط إيقاف!';
+    updateCards();
+
+  } else if (phase === 'running') {
+    const elapsed = (performance.now() - startTime) / 1000;
+    phase = 'done';
+    results.push({ name: players[currentIdx], time: elapsed });
+    setTapBtn({ label: '✓', sub: 'تم', disabled: true, stop: false });
+    status.textContent = '';
+    updateCards();
+
+    // Show result
+    const diff = Math.abs(elapsed - target);
+    const rev  = document.getElementById('resultReveal');
+    document.getElementById('revealTime').textContent = elapsed.toFixed(2) + ' ث';
+    document.getElementById('revealSub').textContent  = 'فارق ' + diff.toFixed(2) + ' ث عن الهدف';
+    rev.className = 'result-reveal';
+
+    setTimeout(() => {
+      currentIdx++;
+      if (currentIdx < players.length) {
+        beginCountdown();
+        updateCards();
+      } else {
+        setTimeout(showResults, 400);
+      }
+    }, 1800);
+  }
+}
+
+// ── RESULTS ───────────────────────────────
+function showResults() {
+  document.getElementById('finalTarget').textContent = target.toFixed(1) + ' ثانية';
+  const sorted = [...results].sort((a, b) =>
+    Math.abs(a.time - target) - Math.abs(b.time - target)
+  );
+
+  // Podium (≤ 3 players)
+  const podium  = document.getElementById('podiumWrap');
+  const fullList = document.getElementById('fullList');
+  podium.innerHTML  = '';
+  fullList.innerHTML = '';
+
+  const medals = ['🥇','🥈','🥉'];
+  const pcls   = ['p-1st','p-2nd','p-3rd'];
+
+  if (sorted.length <= 3) {
+    sorted.forEach((r, i) => {
+      const diff = Math.abs(r.time - target);
+      const card = document.createElement('div');
+      card.className = 'podium-card ' + (pcls[i] || 'p-3rd');
+      card.innerHTML = `
+        <div class="medal">${medals[i] || '🎯'}</div>
+        <div class="p-name-r">${r.name}</div>
+        <div class="p-time-r">${r.time.toFixed(2)}ث</div>
+        <div class="p-diff-r">فارق ${diff.toFixed(2)}ث</div>
+      `;
+      podium.appendChild(card);
+    });
+  } else {
+    // Full list for 4+ players
+    sorted.forEach((r, i) => {
+      const diff = Math.abs(r.time - target);
+      const row  = document.createElement('div');
+      row.className = 'list-row rank-' + Math.min(i + 1, 3);
+      row.innerHTML = `
+        <div class="lr-rank">${medals[i] || (i+1)+'.'}</div>
+        <div class="lr-name">${r.name}</div>
+        <div class="lr-time">${r.time.toFixed(2)}ث</div>
+        <div class="lr-diff">فارق ${diff.toFixed(2)}ث</div>
+      `;
+      fullList.appendChild(row);
+    });
+  }
+
+  showScreen('screenResults');
+}
+
+// ── RESET ─────────────────────────────────
+function resetGame() {
+  clearInterval(cdInterval);
+  showScreen('screenSetup');
+}
+
+// ── UTIL ──────────────────────────────────
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+</script>
+</body>
+</html>
