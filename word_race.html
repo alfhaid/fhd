@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>كلمات ألين</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+Bhaijaan+2:wght@700;800&family=Tajawal:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+:root{
+  --bg:         #0e6e7d;
+  --surface:    rgba(255,255,255,.08);
+  --surface2:   rgba(255,255,255,.15);
+  --border:     rgba(255,255,255,.18);
+  --border2:    rgba(255,255,255,.35);
+  --text:       #ffffff;
+  --muted:      rgba(255,255,255,.5);
+  --dim:        rgba(255,255,255,.22);
+  --teal:       #14879a;
+  --teal-mid:   #0e6e7d;
+  --teal-dark:  #0a5361;
+  --gold:       #FCC61E;
+  --gold-dark:  #C88A06;
+  --gold-light: #FFE267;
+  --green:      #4ade80;
+  --red:        #f87171;
+  --grad:       linear-gradient(110deg,#14879a,#0e6e7d);
+  --grad-gold:  linear-gradient(110deg,#FFE267,#FCC61E,#F5B60C);
+  --radius:     14px;
+}
+
+html,body{
+  min-height:100vh;
+  background:#0a5361;
+  font-family:'Tajawal',sans-serif;
+  color:var(--text);
+  display:flex;align-items:center;justify-content:center;
+}
+
+
+.app{width:100%;max-width:420px;padding:20px 16px 32px;display:flex;flex-direction:column;align-items:center;position:relative}
+.screen{display:none;flex-direction:column;align-items:center;gap:18px;width:100%}
+.screen.active{display:flex}
+
+/* ── LOGO TILES ── */
+.logo-wrap{
+  font-family:'Baloo Bhaijaan 2',sans-serif;
+  display:inline-flex;flex-direction:column;align-items:center;
+  gap:.38em;direction:rtl;line-height:1;font-size:30px;
+  margin-bottom:2px;
+}
+.logo-row{display:flex;align-items:flex-end;gap:.16em}
+.logo-row.bottom{align-items:center;gap:.07em;padding-top:.06em}
+.tile{
+  width:1.7em;height:1.7em;border-radius:.28em;
+  display:flex;align-items:center;justify-content:center;font-weight:800;
+}
+.tile span{font-size:1.1em}
+.tile-y{
+  background:linear-gradient(150deg,#FFE267 0%,#FCC61E 55%,#F5B60C 100%);
+  box-shadow:inset 0 .06em 0 rgba(255,255,255,.55),inset 0 -.04em 0 rgba(180,120,0,.35),0 .14em 0 #C88A06,0 .28em .28em rgba(0,0,0,.35);
+  color:#15524E;
+}
+.tile-w{
+  background:linear-gradient(150deg,#FFFFFF 0%,#EDF2F5 60%,#DCE5EA 100%);
+  box-shadow:inset 0 .06em 0 rgba(255,255,255,.9),inset 0 -.04em 0 rgba(120,140,155,.30),0 .13em 0 #AEBDC6,0 .26em .26em rgba(0,0,0,.32);
+  color:#2A7D77;
+}
+.logo-row.top .tile:nth-child(1){transform:rotate(2deg)}
+.logo-row.top .tile:nth-child(2){transform:translateY(.1em) rotate(-2deg)}
+.logo-row.top .tile:nth-child(3){transform:rotate(1deg)}
+.logo-row.top .tile:nth-child(4){transform:translateY(.1em) rotate(-1.5deg)}
+.logo-row.top .tile:nth-child(5){transform:rotate(2.5deg)}
+.logo-row.bottom .tile:nth-child(1){transform:translateY(.08em) rotate(-9deg)}
+.logo-row.bottom .tile:nth-child(2){transform:translateY(.4em) rotate(11deg);margin-inline:-.08em}
+.logo-row.bottom .tile:nth-child(3){width:1.78em;height:1.78em;transform:translateY(-.1em) rotate(-3deg);z-index:2}
+.logo-row.bottom .tile:nth-child(4){transform:translateY(.32em) rotate(13deg);margin-inline:-.05em}
+
+/* ── SETUP ── */
+.setup-card{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:20px;padding:22px;width:100%;
+  display:flex;flex-direction:column;gap:14px;
+}
+.field-label{font-size:12px;color:var(--muted);margin-bottom:5px}
+.count-row{
+  display:flex;align-items:center;
+  background:rgba(255,255,255,.08);border:1px solid var(--border);
+  border-radius:var(--radius);padding:10px 14px;justify-content:space-between;
+}
+.count-row span{font-size:14px;color:var(--muted)}
+.count-controls{display:flex;align-items:center;gap:12px}
+.count-btn{
+  width:32px;height:32px;border-radius:50%;border:1px solid var(--border);
+  background:var(--surface);color:var(--text);font-size:18px;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;transition:background .15s;line-height:1;
+}
+.count-btn:hover{background:var(--surface2)}
+.count-val{font-size:22px;font-weight:700;color:var(--text);min-width:24px;text-align:center}
+.names-list{display:flex;flex-direction:column;gap:8px}
+.name-input{
+  width:100%;background:rgba(255,255,255,.08);border:1px solid var(--border);
+  border-radius:var(--radius);padding:11px 14px;color:var(--text);
+  font-family:'Tajawal',sans-serif;font-size:14px;text-align:right;outline:none;transition:border-color .2s;
+}
+.name-input::placeholder{color:var(--dim)}
+.name-input:focus{border-color:var(--teal)}
+
+/* ── BUTTONS ── */
+.btn{
+  width:100%;padding:14px;border:none;border-radius:var(--radius);
+  font-family:'Tajawal',sans-serif;font-size:16px;font-weight:700;
+  cursor:pointer;transition:opacity .2s,transform .1s;
+}
+.btn:active{transform:scale(.98)}
+.btn-primary{background:var(--grad-gold);color:#15524E}
+.btn-ghost{
+  background:var(--surface);border:1px solid var(--border);
+  color:var(--muted);font-size:14px;
+}
+.btn-ghost:hover{color:var(--text);background:var(--surface2)}
+
+/* ── GAME ── */
+.badge{
+  background:var(--surface);border:1px solid var(--border);
+  color:var(--muted);font-size:12px;padding:5px 14px;border-radius:20px;
+}
+.player-name-big{font-size:24px;font-weight:700;color:var(--gold)}
+
+/* Slots */
+.slots-row{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;width:100%}
+.slot{
+  width:52px;height:60px;
+  background:rgba(255,255,255,.06);
+  border:2px solid rgba(20,135,154,.25);
+  border-radius:10px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:26px;font-weight:700;color:var(--text);
+  transition:all .2s;
+}
+.slot.filled{
+  background:rgba(252,198,30,.12);
+  border-color:rgba(252,198,30,.5);
+  color:var(--gold);
+}
+.slot.pop{animation:slotPop .22s ease}
+@keyframes slotPop{0%{transform:scale(.75);opacity:.4}100%{transform:scale(1);opacity:1}}
+
+/* Timer */
+.timer-display{
+  font-size:46px;font-weight:900;
+  color:rgba(255,255,255,.15);
+  font-variant-numeric:tabular-nums;
+  transition:color .3s;
+}
+.timer-display.running{color:var(--teal)}
+.timer-display.done{color:var(--gold)}
+
+/* Status */
+.status-txt{font-size:13px;color:var(--muted);min-height:20px;text-align:center}
+
+/* Letter cards */
+.cards-grid{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;width:100%}
+.lcard{
+  width:60px;height:66px;
+  background:rgba(255,255,255,.1);
+  border:1.5px solid rgba(255,255,255,.2);
+  border-radius:12px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:30px;font-weight:700;color:var(--text);
+  cursor:pointer;
+  transition:background .12s,border-color .12s,transform .1s,opacity .2s;
+  user-select:none;
+}
+.lcard:hover:not(.used){
+  background:rgba(252,198,30,.15);
+  border-color:rgba(252,198,30,.6);
+  transform:translateY(-3px);
+  color:var(--gold);
+}
+.lcard:active:not(.used){transform:scale(.9)}
+.lcard.used{opacity:.13;cursor:default;pointer-events:none;transform:none}
+.lcard.wrong{animation:shake .35s ease;border-color:rgba(248,113,113,.7);background:rgba(248,113,113,.1)}
+@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-7px)}40%{transform:translateX(7px)}60%{transform:translateX(-4px)}80%{transform:translateX(4px)}}
+
+/* ── RESULTS ── */
+.results-header{text-align:center;width:100%}
+.rh-sub{font-size:12px;color:var(--muted);margin-bottom:4px}
+.rh-main{font-size:17px;font-weight:700}
+.word-badge{
+  background:rgba(252,198,30,.1);border:1px solid rgba(252,198,30,.35);
+  border-radius:10px;padding:10px 28px;font-size:28px;font-weight:700;color:var(--gold);
+}
+.podium-wrap{display:flex;gap:8px;width:100%;align-items:flex-end;justify-content:center}
+.podium-card{
+  flex:1;border-radius:var(--radius);padding:14px 8px;text-align:center;
+  border:1px solid var(--border);
+  display:flex;flex-direction:column;align-items:center;gap:6px;
+}
+.p-1st{background:rgba(252,198,30,.12);border-color:rgba(252,198,30,.45);order:2;padding-top:22px}
+.p-2nd{background:rgba(20,135,154,.1);border-color:rgba(20,135,154,.3);order:1}
+.p-3rd{background:rgba(248,113,113,.07);border-color:rgba(248,113,113,.25);order:3}
+.medal{font-size:24px}
+.p-name-r{font-size:13px;font-weight:600;color:var(--text)}
+.p-time-r{font-size:16px;font-weight:700;font-variant-numeric:tabular-nums}
+.p-1st .p-time-r{color:var(--gold)}
+.p-2nd .p-time-r{color:var(--teal)}
+.p-3rd .p-time-r{color:var(--red)}
+.full-list{display:flex;flex-direction:column;gap:6px;width:100%}
+.list-row{
+  display:flex;align-items:center;gap:12px;
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--radius);padding:11px 14px;
+}
+.lr-rank{font-size:14px;width:22px}
+.lr-name{flex:1;font-size:14px;color:var(--text)}
+.lr-time{font-size:14px;font-weight:600;font-variant-numeric:tabular-nums;color:var(--muted)}
+.rank-1 .lr-time{color:var(--gold)}
+.rank-2 .lr-time{color:var(--teal)}
+.rank-3 .lr-time{color:var(--red)}
+</style>
+</head>
+<body>
+<div class="app">
+
+<!-- ═══ SETUP ═══ -->
+<div class="screen active" id="screenSetup">
+
+  <div class="logo-wrap">
+    <div class="logo-row top">
+      <div class="tile tile-y"><span>ك</span></div>
+      <div class="tile tile-y"><span>ل</span></div>
+      <div class="tile tile-y"><span>م</span></div>
+      <div class="tile tile-y"><span>ا</span></div>
+      <div class="tile tile-y"><span>ت</span></div>
+    </div>
+    <div class="logo-row bottom">
+      <div class="tile tile-w"><span>أ</span></div>
+      <div class="tile tile-w"><span>ل</span></div>
+      <div class="tile tile-w"><span>ي</span></div>
+      <div class="tile tile-w"><span>ن</span></div>
+    </div>
+  </div>
+
+  <div style="font-size:13px;color:rgba(252,198,30,.7);text-align:center;padding:0 8px;margin-top:10px;line-height:1.6">رتّب الحروف واكتشف الكلمة المخفية</div>
+  <div class="setup-card">
+    <div>
+      <div class="field-label">عدد المتسابقين</div>
+      <div class="count-row">
+        <span>المتسابقون</span>
+        <div class="count-controls">
+          <button class="count-btn" onclick="changeCount(-1)">−</button>
+          <div class="count-val" id="countVal">2</div>
+          <button class="count-btn" onclick="changeCount(1)">+</button>
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class="field-label">أسماء المتسابقين</div>
+      <div class="names-list" id="namesList"></div>
+    </div>
+  </div>
+  <button class="btn btn-primary" onclick="startGame()">ابدأ اللعبة</button>
+</div>
+
+<!-- ═══ GAME ═══ -->
+<div class="screen" id="screenGame">
+  <div class="badge" id="gameBadge">المتسابق ١ من ٢</div>
+  <div class="player-name-big" id="playerNameDisplay">—</div>
+  <div class="slots-row" id="slotsRow"></div>
+  <div class="timer-display" id="timerDisplay">0.00</div>
+  <div class="status-txt" id="statusTxt">اضغط ابدأ عندما تكون مستعداً</div>
+  <div class="cards-grid" id="cardsGrid" style="visibility:hidden"></div>
+  <button class="btn btn-primary" id="startBtn" onclick="beginRound()" style="max-width:200px">ابدأ</button>
+</div>
+
+<!-- ═══ RESULTS ═══ -->
+<div class="screen" id="screenResults">
+
+  <div class="logo-wrap" style="font-size:22px">
+    <div class="logo-row top">
+      <div class="tile tile-y"><span>ك</span></div>
+      <div class="tile tile-y"><span>ل</span></div>
+      <div class="tile tile-y"><span>م</span></div>
+      <div class="tile tile-y"><span>ا</span></div>
+      <div class="tile tile-y"><span>ت</span></div>
+    </div>
+    <div class="logo-row bottom">
+      <div class="tile tile-w"><span>أ</span></div>
+      <div class="tile tile-w"><span>ل</span></div>
+      <div class="tile tile-w"><span>ي</span></div>
+      <div class="tile tile-w"><span>ن</span></div>
+    </div>
+  </div>
+
+  <div class="results-header">
+    <div class="rh-sub" style="font-size:15px;margin-bottom:-4px">الكلمة كانت</div>
+  </div>
+  <div class="word-badge" id="finalWord">—</div>
+  <div class="podium-wrap" id="podiumWrap"></div>
+  <div class="full-list"   id="fullList"></div>
+  <button class="btn btn-ghost" onclick="resetGame()">لعبة جديدة</button>
+</div>
+
+</div>
+<script>
+const WORDS = [
+  'مدرسة','فراشة','سيارة','مفتاح','طاولة','نافذة','مكتبة','حديقة',
+  'رسالة','جامعة','قاموس','منديل','زرافة','صحراء','سنجاب',
+  'برتقال','مستشفى','دولفين','سلحفاة','كنافة',
+  'شجرة','حصان','مطبخ','غرفة','كرسي','قمر','بحر','جبل','نهر',
+  'دولة','سلام','نجمة','سحاب','رياح','صديق','قلعة','حلوى'
+];
+
+let playerCount=2, players=[], currentWord='', wordLetters=[];
+let scrambled=[], used=[], nextSlot=0;
+let timerRunning=false, timerInterval=null, startTime=0;
+let currentIdx=0, results=[];
+
+function buildNames(){
+  const list=document.getElementById('namesList');
+  list.innerHTML='';
+  for(let i=0;i<playerCount;i++){
+    const inp=document.createElement('input');
+    inp.className='name-input';inp.type='text';
+    inp.placeholder='اسم المتسابق '+(i+1);inp.id='n'+i;
+    list.appendChild(inp);
+  }
+}
+buildNames();
+
+function changeCount(d){
+  playerCount=Math.min(6,Math.max(1,playerCount+d));
+  document.getElementById('countVal').textContent=playerCount;
+  buildNames();
+}
+
+function startGame(){
+  players=[];
+  for(let i=0;i<playerCount;i++){
+    const el=document.getElementById('n'+i);
+    players.push(el&&el.value.trim()?el.value.trim():'لاعب '+(i+1));
+  }
+  currentIdx=0;results=[];
+  currentWord=WORDS[Math.floor(Math.random()*WORDS.length)];
+  wordLetters=Array.from(currentWord);
+  showScreen('screenGame');
+  loadPlayer();
+}
+
+function loadPlayer(){
+  document.getElementById('gameBadge').textContent='المتسابق '+(currentIdx+1)+' من '+players.length;
+  document.getElementById('playerNameDisplay').textContent=players[currentIdx];
+  document.getElementById('statusTxt').textContent='اضغط ابدأ عندما تكون مستعداً';
+  document.getElementById('timerDisplay').textContent='0.00';
+  document.getElementById('timerDisplay').className='timer-display';
+  document.getElementById('cardsGrid').style.visibility='hidden';
+  const sb=document.getElementById('startBtn'); sb.style.display='block'; sb.disabled=false;
+  scrambled=shuffle([...wordLetters]);
+  used=new Array(scrambled.length).fill(false);
+  nextSlot=0;timerRunning=false;
+  clearInterval(timerInterval);
+  buildSlots();buildCards();
+}
+
+function shuffle(arr){
+  for(let i=arr.length-1;i>0;i--){
+    const j=Math.floor(Math.random()*(i+1));
+    [arr[i],arr[j]]=[arr[j],arr[i]];
+  }
+  if(arr.length>1&&arr.join('')===wordLetters.join(''))return shuffle(arr);
+  return arr;
+}
+
+function buildSlots(){
+  const row=document.getElementById('slotsRow');
+  row.innerHTML='';
+  wordLetters.forEach((_,i)=>{
+    const s=document.createElement('div');
+    s.className='slot';s.id='slot'+i;
+    row.appendChild(s);
+  });
+}
+
+function buildCards(){
+  const grid=document.getElementById('cardsGrid');
+  grid.innerHTML='';
+  scrambled.forEach((letter,i)=>{
+    const c=document.createElement('div');
+    c.className='lcard';c.id='card'+i;c.textContent=letter;
+    c.onclick=()=>handleTap(i);
+    grid.appendChild(c);
+  });
+}
+
+function beginRound(){
+  const btn=document.getElementById('startBtn');
+  const status=document.getElementById('statusTxt');
+  btn.disabled=true;
+  let cd=3;
+  status.textContent='تظهر الكلمة خلال '+cd+'...';
+  const iv=setInterval(()=>{
+    cd--;
+    if(cd<=0){
+      clearInterval(iv);
+      document.getElementById('cardsGrid').style.visibility='visible';
+      btn.style.display='none';
+      startTime=performance.now();
+      timerRunning=true;
+      document.getElementById('timerDisplay').className='timer-display running';
+      document.getElementById('statusTxt').textContent='رتّب الكلمة!';
+      timerInterval=setInterval(()=>{
+        document.getElementById('timerDisplay').textContent=
+          ((performance.now()-startTime)/1000).toFixed(2);
+      },50);
+    } else {
+      status.textContent='تظهر الكلمة خلال '+cd+'...';
+    }
+  },1000);
+}
+
+function handleTap(idx){
+  if(used[idx]||!timerRunning)return;
+  const letter=scrambled[idx];
+  const expected=wordLetters[nextSlot];
+  if(letter===expected){
+    used[idx]=true;
+    document.getElementById('card'+idx).classList.add('used');
+    const slot=document.getElementById('slot'+nextSlot);
+    slot.textContent=letter;
+    slot.classList.add('filled','pop');
+    setTimeout(()=>slot.classList.remove('pop'),250);
+    nextSlot++;
+    if(nextSlot===wordLetters.length){
+      clearInterval(timerInterval);
+      timerRunning=false;
+      const elapsed=(performance.now()-startTime)/1000;
+      document.getElementById('timerDisplay').textContent=elapsed.toFixed(2);
+      document.getElementById('timerDisplay').className='timer-display done';
+      document.getElementById('statusTxt').textContent='✓ أحسنت!';
+      results.push({name:players[currentIdx],time:elapsed});
+      setTimeout(()=>{
+        currentIdx++;
+        if(currentIdx<players.length)loadPlayer();
+        else showResults();
+      },1500);
+    }
+  } else {
+    const card=document.getElementById('card'+idx);
+    card.classList.remove('wrong');
+    void card.offsetWidth;
+    card.classList.add('wrong');
+    setTimeout(()=>card.classList.remove('wrong'),400);
+  }
+}
+
+function showResults(){
+  document.getElementById('finalWord').textContent=currentWord;
+  const sorted=[...results].sort((a,b)=>a.time-b.time);
+  const medals=['🥇','🥈','🥉'];
+  const pcls=['p-1st','p-2nd','p-3rd'];
+  const podium=document.getElementById('podiumWrap');
+  const list=document.getElementById('fullList');
+  podium.innerHTML='';list.innerHTML='';
+  if(sorted.length<=3){
+    sorted.forEach((r,i)=>{
+      const card=document.createElement('div');
+      card.className='podium-card '+(pcls[i]||'p-3rd');
+      card.innerHTML=`<div class="medal">${medals[i]||'🎯'}</div><div class="p-name-r">${r.name}</div><div class="p-time-r">${r.time.toFixed(2)}ث</div>`;
+      podium.appendChild(card);
+    });
+  } else {
+    sorted.forEach((r,i)=>{
+      const row=document.createElement('div');
+      row.className='list-row rank-'+Math.min(i+1,3);
+      row.innerHTML=`<div class="lr-rank">${medals[i]||(i+1)+'.'}</div><div class="lr-name">${r.name}</div><div class="lr-time">${r.time.toFixed(2)}ث</div>`;
+      list.appendChild(row);
+    });
+  }
+  showScreen('screenResults');
+}
+
+function resetGame(){clearInterval(timerInterval);showScreen('screenSetup');buildNames()}
+function showScreen(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active')}
+</script>
+</body>
+</html>
