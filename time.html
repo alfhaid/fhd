@@ -342,9 +342,27 @@
   /* 4+ players: no podium, just list */
   .no-podium .podium-wrap { display: none; }
 
+  /* ── HEADER EMBLEM (1a) ── */
+  .emblem { position: relative; width: 200px; height: 200px; margin-bottom: 2px; }
+  .emblem svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+  .emblem .em-arc { transform-origin: 100px 100px; transform: rotate(-90deg); animation: hcSweep 6s cubic-bezier(.4,0,.2,1) infinite; }
+  .emblem .em-hand-svg { transform-origin: center; animation: hcSpin 8s linear infinite; }
+  .emblem .em-center {
+    position: absolute; inset: 0;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+  }
+  .emblem .em-top { font-size: 40px; font-weight: 900; line-height: .9; background: var(--grad); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+  .emblem .em-bot { font-size: 25px; font-weight: 700; color: #fff; letter-spacing: 4px; margin-top: 2px; }
+  @keyframes hcSpin { to { transform: rotate(360deg); } }
+  @keyframes hcSweep { 0% { stroke-dashoffset: 448; } 55% { stroke-dashoffset: 150; } 100% { stroke-dashoffset: 448; } }
+
   @media (max-width: 380px) {
     .arc-wrap, .arc-wrap svg { width: 175px; height: 175px; }
     .arc-num { font-size: 38px; }
+    .emblem { width: 176px; height: 176px; }
+    .emblem .em-top { font-size: 35px; }
+    .emblem .em-bot { font-size: 22px; }
   }
 </style>
 </head>
@@ -354,49 +372,28 @@
   <!-- ═══ SETUP SCREEN ═══ -->
   <div class="screen active" id="screenSetup">
 
-    <!-- Icon 1: Classic clock with gradient arc -->
-    <svg width="90" height="90" viewBox="0 0 90 90" xmlns="http://www.w3.org/2000/svg" style="margin-bottom:-6px">
-      <defs>
-        <linearGradient id="iGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stop-color="#a78bfa"/>
-          <stop offset="100%" stop-color="#60a5fa"/>
-        </linearGradient>
-      </defs>
-      <!-- outer glow ring -->
-      <circle cx="45" cy="45" r="38" fill="none" stroke="url(#iGrad)" stroke-width="1" opacity=".18"/>
-      <!-- track -->
-      <circle cx="45" cy="45" r="30" fill="none" stroke="rgba(255,255,255,.07)" stroke-width="9"/>
-      <!-- arc progress -->
-      <circle cx="45" cy="45" r="30" fill="none" stroke="url(#iGrad)" stroke-width="9"
-        stroke-linecap="round" stroke-dasharray="188" stroke-dashoffset="47"
-        transform="rotate(-90 45 45)"/>
-      <!-- major ticks -->
-      <g stroke="rgba(255,255,255,.35)" stroke-width="2" stroke-linecap="round">
-        <line x1="45" y1="8"  x2="45" y2="14"/>
-        <line x1="82" y1="45" x2="76" y2="45"/>
-        <line x1="45" y1="82" x2="45" y2="76"/>
-        <line x1="8"  y1="45" x2="14" y2="45"/>
-      </g>
-      <!-- minor ticks -->
-      <g stroke="rgba(255,255,255,.15)" stroke-width="1" stroke-linecap="round">
-        <line x1="68.5" y1="12.5" x2="65.5" y2="17.7"/>
-        <line x1="77.5" y1="21.5" x2="72.3" y2="24.5"/>
-        <line x1="77.5" y1="68.5" x2="72.3" y2="65.5"/>
-        <line x1="68.5" y1="77.5" x2="65.5" y2="72.3"/>
-        <line x1="21.5" y1="77.5" x2="24.5" y2="72.3"/>
-        <line x1="12.5" y1="68.5" x2="17.7" y2="65.5"/>
-        <line x1="12.5" y1="21.5" x2="17.7" y2="24.5"/>
-        <line x1="21.5" y1="12.5" x2="24.5" y2="17.7"/>
-      </g>
-      <!-- minute hand -->
-      <line x1="45" y1="45" x2="45" y2="22" stroke="#60a5fa" stroke-width="2.5" stroke-linecap="round"/>
-      <!-- hour hand -->
-      <line x1="45" y1="45" x2="59" y2="53" stroke="#a78bfa" stroke-width="2" stroke-linecap="round"/>
-      <!-- center dot -->
-      <circle cx="45" cy="45" r="3.5" fill="#a78bfa"/>
-    </svg>
-
-    <div class="logo"><span>ساعة</span> هشام</div>
+    <!-- Header emblem (1a): name inside the clock disc -->
+    <div class="emblem">
+      <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="emGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#a78bfa"/>
+            <stop offset="100%" stop-color="#60a5fa"/>
+          </linearGradient>
+        </defs>
+        <g id="emblemTicks"></g>
+        <circle cx="100" cy="100" r="71" fill="none" stroke="rgba(255,255,255,.07)" stroke-width="6"/>
+        <circle class="em-arc" cx="100" cy="100" r="71" fill="none" stroke="url(#emGrad)" stroke-width="6"
+          stroke-linecap="round" stroke-dasharray="448"/>
+      </svg>
+      <svg class="em-hand-svg" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+        <line x1="100" y1="100" x2="100" y2="44" stroke="url(#emGrad)" stroke-width="2.5" stroke-linecap="round"/>
+      </svg>
+      <div class="em-center">
+        <div class="em-top">ساعة</div>
+        <div class="em-bot">هشام</div>
+      </div>
+    </div>
     <div class="setup-card">
       <div>
         <div class="field-label">عدد المتسابقين</div>
@@ -527,6 +524,27 @@ function buildNames() {
   }
 }
 buildNames();
+
+// ── HEADER EMBLEM TICKS ────────────────────
+function buildEmblemTicks() {
+  const g = document.getElementById('emblemTicks');
+  if (!g || g.childElementCount) return;
+  const cx = 100, cy = 100;
+  for (let i = 0; i < 60; i++) {
+    const ang = (i / 60) * 2 * Math.PI - Math.PI / 2;
+    const maj = i % 5 === 0;
+    const r = 88, r0 = maj ? 78 : 82;
+    const ln = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+    ln.setAttribute('x1', (cx + r  * Math.cos(ang)).toFixed(2));
+    ln.setAttribute('y1', (cy + r  * Math.sin(ang)).toFixed(2));
+    ln.setAttribute('x2', (cx + r0 * Math.cos(ang)).toFixed(2));
+    ln.setAttribute('y2', (cy + r0 * Math.sin(ang)).toFixed(2));
+    ln.setAttribute('stroke', maj ? 'rgba(255,255,255,.25)' : 'rgba(255,255,255,.1)');
+    ln.setAttribute('stroke-width', maj ? '2' : '1');
+    g.appendChild(ln);
+  }
+}
+buildEmblemTicks();
 
 function changeCount(d) {
   playerCount = Math.min(6, Math.max(1, playerCount + d));
