@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<title>كلمة أكاديا — GMC</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@700;900&family=Saira+Condensed:wght@900&family=Michroma&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;overflow:hidden}
+body{
+  background:#0e1012;color:#e8eaec;font-family:'Cairo',sans-serif;
+  display:flex;flex-direction:column;align-items:stretch;
+  max-width:480px;margin:0 auto;height:100dvh;
+  position:relative;
+}
+
+/* ── FULL PAGE GRILLE ── */
+.pg{
+  position:fixed;inset:0;
+  display:flex;gap:9px;justify-content:center;
+  pointer-events:none;z-index:0;
+}
+.pg .b{flex:1;max-width:14px;opacity:.09}
+.pg .b.d{background:linear-gradient(180deg,#3a3d42,#1a1d20)}
+.pg .b.r{background:linear-gradient(180deg,#CE1126,#5a0810)}
+body>*:not(.pg){position:relative;z-index:1}
+
+/* ── HEADER ── */
+.gmc-word{font-family:'Saira Condensed',sans-serif}
+.header{width:100%;overflow:hidden;flex-shrink:0}
+.header-inner{
+  position:relative;padding:14px 26px 12px;
+  background:linear-gradient(180deg,rgba(20,22,24,.96),rgba(10,11,12,.98));
+  display:flex;flex-direction:column;align-items:center;gap:8px;overflow:hidden
+}
+.grille{position:absolute;inset:0;display:flex;gap:9px;justify-content:center;align-items:stretch;opacity:.55;pointer-events:none}
+.grille .bar{flex:1;max-width:14px;border-radius:3px}
+.grille .bar.dark{background:linear-gradient(180deg,#2a2d31,#141618)}
+.grille .bar.red{background:linear-gradient(180deg,#CE1126,#7d0a15)}
+.content{position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;gap:6px}
+.badge{background:#CE1126;color:#fff;font-family:'Saira Condensed',sans-serif;font-size:16px;font-weight:900;letter-spacing:4px;padding:3px 12px 1px;border-radius:5px;box-shadow:0 0 18px rgba(206,17,38,.55),inset 0 0 0 1.5px rgba(255,255,255,.22)}
+.name{font-family:'Michroma',sans-serif;font-size:26px;color:#fff;line-height:1;letter-spacing:2px;text-align:center}
+.sub{display:flex;align-items:center;gap:10px;justify-content:center}
+.sub .line{width:26px;height:2px}
+.sub .line.r{background:linear-gradient(90deg,transparent,#CE1126)}
+.sub .line.l{background:linear-gradient(90deg,#CE1126,transparent)}
+.sub .kalima{font-size:11px;font-weight:900;letter-spacing:4px;color:#c9ced4}
+
+/* ── SCORE BAR ── */
+.score-bar{display:flex;align-items:center;gap:8px;padding:8px 12px;flex-shrink:0;border-bottom:1px solid rgba(255,255,255,.05)}
+.sbox{flex:1;border-radius:10px;overflow:hidden;background:rgba(22,26,29,.85);border:1px solid #222629}
+.sbox-top{height:3px}
+.sbox-top.red{background:#CE1126}
+.sbox-top.wht{background:rgba(255,255,255,.65)}
+.sbox-body{padding:7px 10px;display:flex;flex-direction:column;align-items:center}
+.sbox-lbl{font-size:9px;font-weight:700;letter-spacing:2px;color:#555;margin-bottom:1px}
+.sbox-val{font-size:22px;font-weight:900;line-height:1}
+.sbox.t0 .sbox-val{color:#CE1126}
+.sbox.t1 .sbox-val{color:#d8dde3}
+.turn-mid{flex:1;display:flex;flex-direction:column;align-items:center;gap:1px}
+.turn-lbl{font-size:9px;color:#444;font-weight:700;letter-spacing:1px}
+.turn-nm{font-size:14px;font-weight:900;transition:color .3s}
+.turn-wpts{font-size:9px;color:#444;font-weight:700}
+
+/* ── BOARD ── */
+.board{flex:1;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:4px;padding:6px 10px;min-height:0;overflow:hidden}
+.row{display:flex;gap:4px;justify-content:center}
+.tile{width:50px;height:50px;border-radius:7px;border:2px solid #242830;display:flex;align-items:center;justify-content:center;font-size:21px;font-weight:900;color:#e8eaec;background:rgba(24,27,30,.9);user-select:none;position:relative;flex-shrink:0}
+.tile.filled{border-color:#404550}
+.tile.correct{background:#1d9e75;border-color:#1d9e75;color:#fff}
+.tile.present{background:#b8720e;border-color:#b8720e;color:#fff}
+.tile.absent{background:#1e2125;border-color:#1e2125;color:#444}
+.tile.pop{animation:pop .12s ease}
+@keyframes pop{0%{transform:scale(1)}50%{transform:scale(1.14)}100%{transform:scale(1)}}
+.tile.flip{animation:flip .45s ease forwards}
+@keyframes flip{0%{transform:rotateX(0)}45%{transform:rotateX(90deg)}55%{transform:rotateX(90deg)}100%{transform:rotateX(0)}}
+.tile-cnt{position:absolute;top:2px;left:3px;font-size:8px;font-weight:900;color:rgba(255,255,255,.65);line-height:1;pointer-events:none}
+
+/* ── MSG ── */
+.msg{height:18px;text-align:center;font-size:12px;font-weight:700;color:#e9c46a;flex-shrink:0}
+
+/* ── KEYBOARD ── */
+.kb{padding:3px 5px 4px;flex-shrink:0}
+.kb-row{display:flex;gap:3px;margin-bottom:3px;justify-content:center}
+.key{flex:1;max-width:34px;height:38px;border-radius:6px;border:none;background:#252830;color:#e8eaec;font-family:'Cairo',sans-serif;font-size:14px;font-weight:900;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .12s;user-select:none}
+.key:active{transform:scale(.88)}
+.key.correct{background:#1d9e75;color:#fff}
+.key.present{background:#b8720e;color:#fff}
+.key.absent{background:#181b1e;color:#333;cursor:default}
+.key.absent:active{transform:none}
+.key.shk{animation:shake .35s ease}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+.key.del{max-width:46px;font-size:17px}
+
+/* ── BUTTONS (always visible) ── */
+.btns{display:flex;gap:8px;padding:8px 12px 10px;flex-shrink:0;border-top:1px solid rgba(255,255,255,.05)}
+.ebtn{flex:1;padding:13px;border-radius:10px;border:none;font-family:'Cairo',sans-serif;font-size:15px;font-weight:900;cursor:pointer;letter-spacing:.5px}
+.ebtn.green{background:#1d9e75;color:#fff}
+.result-txt{font-size:13px;font-weight:900;}
+.ebtn.red{background:#CE1126;color:#fff}
+</style>
+</head>
+<body>
+
+<div class="pg" id="pg"></div>
+
+<header class="header">
+  <div class="header-inner">
+    <div class="grille" id="grille"></div>
+    <div class="content">
+      <div class="badge">GMC</div>
+      <div>
+        <div class="name">ACADIA</div>
+        <div class="sub">
+          <div class="line r"></div>
+          <div class="kalima">كلمة</div>
+          <div class="line l"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<div class="score-bar">
+  <div class="sbox t0">
+    <div class="sbox-top red"></div>
+    <div class="sbox-body">
+      <div class="sbox-lbl">فريق ١</div>
+      <div class="sbox-val" id="s0">٠</div>
+    </div>
+  </div>
+  <div class="turn-mid">
+    <div class="turn-lbl">الدور</div>
+    <div class="turn-nm" id="turn-nm">فريق ١</div>
+    <div class="turn-wpts" id="turn-wpts">٠ | ٠</div>
+  </div>
+  <div class="sbox t1">
+    <div class="sbox-top wht"></div>
+    <div class="sbox-body">
+      <div class="sbox-lbl">فريق ٢</div>
+      <div class="sbox-val" id="s1">٠</div>
+    </div>
+  </div>
+</div>
+
+<div class="board" id="board"></div>
+<div class="result-bar" id="result-bar" style="display:none;padding:6px 12px;text-align:center;flex-shrink:0;border-top:1px solid rgba(255,255,255,.05)"><span class="result-txt" id="result-txt"></span><span style="margin-right:10px;font-size:14px;font-weight:900;color:#e9c46a;" id="result-word"></span></div>
+<div class="msg" id="msg"></div>
+<div class="kb" id="kb"></div>
+
+<div class="btns">
+  <button class="ebtn green" onclick="nextRound()">جولة أخرى</button>
+  <button class="ebtn red" onclick="newGame()">مسابقة جديدة</button>
+</div>
+
+<script>
+(function(){
+  ['grille','pg'].forEach(function(id){
+    var g=document.getElementById(id),n=id==='pg'?30:16;
+    for(var i=0;i<n;i++){
+      var b=document.createElement('div');
+      b.className=(id==='pg'?'b ':'bar ')+(i%8===0?'r':'d'+(id==='pg'?'':'ark'));
+      if(id==='grille') b.className='bar '+(i%8===0?'red':'dark');
+      g.appendChild(b);
+    }
+  });
+})();
+</script>
+
+<script>
+const AW_W=[
+  ['ز','ه','ر','ة'],
+  ['ش','ج','ر','ة'],
+  ['ح','م','ا','م'],
+  ['ح','ص','ا','ن'],
+  ['ق','ط','ا','ر'],
+  ['ك','ت','ا','ب'],
+  ['ر','ج','ا','ل'],
+  ['ش','ب','ا','ب'],
+  ['ش','ه','ا','ب'],
+  ['ج','ه','ا','ز'],
+  ['ر','ي','ا','ح'],
+  ['ف','ر','ي','ق'],
+  ['ط','ر','ي','ق'],
+  ['ع','ر','و','س'],
+  ['ك','ن','و','ز'],
+  ['خ','ر','و','ف'],
+  ['ط','ي','و','ر'],
+  ['ب','ي','و','ت'],
+  ['ج','ي','ز','ة'],
+  ['م','ي','ز','ة'],
+  ['خ','ي','م','ة'],
+  ['ق','ل','ع','ة'],
+  ['ص','د','ي','ق'],
+  ['ن','ي','و','م'],
+  ['ت','م','ر','ة'],
+  ['ا','س','ل','و','ب'],
+  ['ا','ح','ل','ا','م'],
+  ['ا','س','ر','ا','ر'],
+  ['ا','م','و','ا','ج'],
+  ['ا','ط','ف','ا','ل'],
+  ['ا','ش','ج','ا','ر'],
+  ['ا','ل','و','ا','ن'],
+  ['ا','ل','م','ا','س'],
+  ['ا','ب','ط','ا','ل'],
+  ['ا','ب','و','ا','ب'],
+  ['ب','س','ت','ا','ن'],
+  ['ب','ط','و','ل','ة'],
+  ['س','ف','ي','ن','ة'],
+  ['س','ل','ا','م','ة'],
+  ['ش','و','ا','ر','ع'],
+  ['ح','ض','ا','ر','ة'],
+  ['خ','ل','ا','ص','ة'],
+  ['ق','ا','ف','ل','ة'],
+  ['س','ب','ا','ح','ة'],
+  ['ف','ل','س','ف','ة'],
+  ['ا','ل','ي','م','ن'],
+  ['ل','ب','ن','ا','ن'],
+  ['م','ر','ح','ب','ا'],
+  ['م','و','ه','ب','ة'],
+  ['ع','م','ا','ر','ة'],
+  ['ا','خ','ت','ر','ا','ع'],
+  ['ا','خ','ت','ب','ا','ر'],
+  ['ا','ح','ت','ر','ا','م'],
+  ['ا','ق','ت','ص','ا','د'],
+  ['ا','ل','ك','و','ي','ت'],
+  ['ا','ل','ا','ر','د','ن'],
+  ['ا','ل','م','غ','ر','ب'],
+  ['ب','ط','ا','ر','ي','ة'],
+  ['م','س','ت','ق','ب','ل'],
+  ['ا','ن','ط','ل','ا','ق'],
+  ['ا','ح','ت','ف','ا','ل'],
+  ['ا','م','ت','ح','ا','ن'],
+  ['ا','ك','ت','ش','ا','ف'],
+  ['ا','ب','ت','ك','ا','ر'],
+  ['ا','ج','ت','م','ا','ع'],
+  ['ا','ق','ت','ر','ا','ح'],
+  ['ب','ط','و','ل','ا','ت'],
+  ['م','و','س','ي','ق','ى'],
+  ['ت','ق','ن','ي','ا','ت'],
+  ['ص','ن','ا','ع','ا','ت'],
+  ['ح','ض','ا','ر','ا','ت'],
+  ['ش','خ','ص','ي','ا','ت'],
+  ['ت','ض','ا','ر','ي','س'],
+  ['م','س','ت','ش','ف','ى'],
+  ['ا','ل','خ','ل','ي','ج'],
+  ['ا','س','ت','ق','ل','ا','ل'],
+  ['ا','س','ت','ث','م','ا','ر'],
+  ['ا','س','ت','خ','د','ا','م'],
+  ['ا','س','ت','ك','ش','ا','ف'],
+  ['ا','س','ت','ف','س','ا','ر'],
+  ['ا','س','ب','ا','ن','ي','ا'],
+  ['ا','ي','ط','ا','ل','ي','ا'],
+  ['ا','ل','م','ا','ن','ي','ا'],
+  ['ا','ل','ص','و','م','ا','ل'],
+  ['ا','ر','ج','ن','ت','ي','ن'],
+  ['ا','ل','ف','ل','ب','ي','ن'],
+  ['م','ا','ل','ي','ز','ي','ا'],
+  ['ت','ا','ي','ل','ا','ن','د'],
+  ['ا','ي','ر','ل','ن','د','ا'],
+  ['ر','و','م','ا','ن','ي','ا'],
+  ['ب','ل','غ','ا','ر','ي','ا'],
+  ['ه','ن','غ','ا','ر','ي','ا'],
+  ['ا','ل','ب','ا','ن','ي','ا'],
+  ['ك','ر','و','ا','ت','ي','ا'],
+  ['ب','ا','ك','س','ت','ا','ن'],
+  ['ا','ل','ي','و','ن','ا','ن'],
+  ['م','ع','ل','و','م','ا','ت'],
+  ['م','ل','ا','ح','ظ','ا','ت'],
+  ['م','ج','ت','م','ع','ا','ت'],
+  ['ا','ل','ت','ح','ل','ي','ل']
+];
+
+const BONUSES=[600,500,400,300,200,100];
+const PTS_C=100,PTS_P=50,MAX_ATT=6,SK='acadia_v1';
+const TNAMES=['فريق ١','فريق ٢'];
+const TCOLORS=['#CE1126','#d8dde3'];
+const KB_ROWS=[
+  ['ض','ص','ث','ق','ف','غ','ع','ه','خ','ح','ج','د'],
+  ['ش','س','ي','ب','ل','ا','ت','ن','م','ك','ط'],
+  ['DEL','ئ','ء','ؤ','ر','ى','ة','و','ز','ظ','ذ']
+];
+const AR='٠١٢٣٤٥٦٧٨٩';
+
+let scores=[0,0],usedIdx=[],startTeam=0,roundNum=0;
+let target=[],wordLen=0,cur=[],attNum=0,over=false,locked=false;
+let wordPts=[0,0],scoredPos,discovered,keyState,letterCount={};
+
+function curTeam(){return(startTeam+attNum)%2;}
+function toAr(n){return String(n).replace(/\d/g,function(d){return AR[d];});}
+function save(){try{localStorage.setItem(SK,JSON.stringify({scores,usedIdx,startTeam,roundNum}));}catch(e){}}
+function load(){try{var d=JSON.parse(localStorage.getItem(SK)||'{}');if(d.scores)scores=d.scores;if(d.usedIdx)usedIdx=d.usedIdx;if(d.startTeam!==undefined)startTeam=d.startTeam;if(d.roundNum!==undefined)roundNum=d.roundNum;}catch(e){}}
+
+function pickWord(){
+  var unused=AW_W.map(function(_,i){return i;}).filter(function(i){return!usedIdx.includes(i);});
+  if(!unused.length){usedIdx=[];return pickWord();}
+  var lens=[4,5,6,7].sort(function(){return Math.random()-.5;});
+  for(var li=0;li<lens.length;li++){
+    var pool=unused.filter(function(i){return AW_W[i].length===lens[li];});
+    if(pool.length)return pool[Math.floor(Math.random()*pool.length)];
+  }
+  return unused[Math.floor(Math.random()*unused.length)];
+}
+
+function evalGuess(g,t){
+  var res=new Array(g.length).fill('absent'),avail={};
+  for(var i=0;i<t.length;i++){if(g[i]===t[i])res[i]='correct';else avail[t[i]]=(avail[t[i]]||0)+1;}
+  for(var i=0;i<g.length;i++){if(res[i]==='absent'&&avail[g[i]]>0){res[i]='present';avail[g[i]]--;}}
+  return res;
+}
+
+function calcPts(guess,results,team){
+  var pts=0;
+  for(var i=0;i<guess.length;i++){
+    var l=guess[i],r=results[i];
+    if(r==='correct'){
+      if(scoredPos.has(i)){}
+      else if(discovered[l]!==undefined&&discovered[l]!==team){pts+=PTS_P;scoredPos.add(i);}
+      else{pts+=PTS_C;scoredPos.add(i);if(discovered[l]===undefined)discovered[l]=team;}
+    }else if(r==='present'){
+      if(discovered[l]===undefined){pts+=PTS_P;discovered[l]=team;}
+    }
+  }
+  return pts;
+}
+
+function buildBoard(){
+  var board=document.getElementById('board');board.innerHTML='';
+  for(var r=0;r<MAX_ATT;r++){
+    var row=document.createElement('div');row.className='row';row.id='row-'+r;
+    for(var c=0;c<wordLen;c++){
+      var tile=document.createElement('div');tile.className='tile';tile.id='t-'+r+'-'+c;
+      row.appendChild(tile);
+    }
+    board.appendChild(row);
+  }
+}
+
+function buildKB(){
+  var kb=document.getElementById('kb');kb.innerHTML='';
+  KB_ROWS.forEach(function(row){
+    var div=document.createElement('div');div.className='kb-row';
+    row.forEach(function(k){
+      var btn=document.createElement('button');
+      btn.className='key'+(k==='DEL'?' del':'');
+      btn.id='key-'+k;btn.textContent=k==='DEL'?'⌫':k;
+      btn.onclick=function(){if(k==='DEL')onDel();else onKey(k);};
+      div.appendChild(btn);
+    });
+    kb.appendChild(div);
+  });
+}
+
+function updateKB(letters,results){
+  var pri={correct:3,present:2,absent:1};
+  letters.forEach(function(l,i){
+    var r=results[i];
+    if((pri[r]||0)>(pri[keyState[l]]||0)){
+      keyState[l]=r;
+      var btn=document.getElementById('key-'+l);
+      if(btn) btn.className='key'+(l==='DEL'?' del':'')+' '+r;
+    }
+  });
+}
+
+function onKey(k){
+  if(over||locked)return;
+  var ks=document.getElementById('key-'+k);
+  if(ks&&ks.classList.contains('absent')){
+    ks.classList.remove('shk');void ks.offsetWidth;ks.classList.add('shk');
+    setTimeout(function(){ks.classList.remove('shk');},400);return;
+  }
+  if(cur.length>=wordLen)return;
+  cur.push(k);
+  var tile=document.getElementById('t-'+attNum+'-'+(cur.length-1));
+  if(tile){tile.textContent=k;tile.className='tile filled pop';}
+  if(cur.length===wordLen)setTimeout(onSubmit,280);
+}
+
+function onDel(){
+  if(over||locked||!cur.length)return;
+  var tile=document.getElementById('t-'+attNum+'-'+(cur.length-1));
+  if(tile){tile.textContent='';tile.className='tile';}
+  cur.pop();
+}
+
+function onSubmit(){
+  if(over||locked||cur.length<wordLen){if(cur.length<wordLen)showMsg('الكلمة غير مكتملة');return;}
+  locked=true;
+  var team=curTeam(),guess=[...cur],results=evalGuess(guess,target);
+  var pts=calcPts(guess,results,team);
+  var won=results.every(function(r){return r==='correct';});
+  var delay=65;
+  for(var c=0;c<wordLen;c++){
+    (function(col,res,letter){
+      var tile=document.getElementById('t-'+attNum+'-'+col);
+      setTimeout(function(){
+        tile.classList.add('flip');
+        setTimeout(function(){
+          tile.className='tile '+res;
+          tile.textContent=letter;
+          // ×N badge on tile if letter repeats in target
+          if((res==='correct'||res==='present')&&(letterCount[letter]||0)>1){
+            var sp=document.createElement('span');
+            sp.className='tile-cnt';
+            sp.textContent='×'+AR[letterCount[letter]];
+            tile.appendChild(sp);
+          }
+        },220);
+      },col*delay);
+    })(c,results[c],guess[c]);
+  }
+  setTimeout(function(){
+    updateKB(guess,results);
+    if(won){
+      var bonus=BONUSES[attNum];
+      wordPts[team]+=pts+bonus;
+      scores[0]+=wordPts[0];scores[1]+=wordPts[1];
+      updateUI();over=true;var rb=document.getElementById('result-bar');
+      document.getElementById('result-txt').textContent=TNAMES[team]+' فاز! +'+toAr(bonus)+' بونص';
+      document.getElementById('result-txt').style.color=TCOLORS[team];
+      document.getElementById('result-word').textContent='';
+      rb.style.display='block';showMsg('');
+    }else{
+      wordPts[team]+=pts;updateUI();
+      attNum++;
+      if(attNum>=MAX_ATT){over=true;
+      var rb=document.getElementById('result-bar');
+      document.getElementById('result-txt').textContent='انتهت المحاولات';
+      document.getElementById('result-txt').style.color='#888';
+      document.getElementById('result-word').textContent=target.join('');
+      rb.style.display='block';showMsg('');}
+      else{cur=[];showMsg('');updateTurnNm();locked=false;}
+    }
+    save();
+  },wordLen*delay+280);
+}
+
+function updateTurnNm(){
+  var t=curTeam();
+  var el=document.getElementById('turn-nm');
+  el.textContent=TNAMES[t];el.style.color=TCOLORS[t];
+}
+
+function updateUI(){
+  document.getElementById('s0').textContent=toAr(scores[0]);
+  document.getElementById('s1').textContent=toAr(scores[1]);
+  document.getElementById('turn-wpts').textContent=toAr(wordPts[0])+' | '+toAr(wordPts[1]);
+}
+
+function showMsg(m){document.getElementById('msg').textContent=m;}
+
+function nextRound(){startTeam=1-startTeam;roundNum++;save();startWord();}
+function newGame(){scores=[0,0];usedIdx=[];startTeam=0;roundNum=0;save();startWord();}
+
+function startWord(){
+  var idx=pickWord();usedIdx.push(idx);
+  target=AW_W[idx];wordLen=target.length;
+  letterCount={};target.forEach(function(l){letterCount[l]=(letterCount[l]||0)+1;});
+  cur=[];attNum=0;over=false;locked=false;
+  wordPts=[0,0];scoredPos=new Set();discovered={};keyState={};
+  document.getElementById('result-bar').style.display='none';
+  updateTurnNm();updateUI();showMsg('');buildBoard();buildKB();
+}
+
+document.addEventListener('keydown',function(e){
+  if(e.key==='Enter'){onSubmit();return;}
+  if(e.key==='Backspace'){onDel();return;}
+  var flat=KB_ROWS.flat().filter(function(k){return k!=='DEL';});
+  if(flat.includes(e.key))onKey(e.key);
+});
+
+load();startWord();
+</script>
+</body>
+</html>
