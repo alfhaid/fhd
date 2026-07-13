@@ -554,12 +554,24 @@ load();startWord();
 
 // ── Auto Scale ──
 function applyScale(){
-  var w=window.innerWidth;
+  var vw=window.innerWidth, vh=window.innerHeight;
   var designW=480;
-  if(w>designW){
-    document.body.style.zoom=w/designW;
+  if(vw>designW){
+    var scale=Math.min(vw/designW, vh/designW*1.2);
+    document.body.style.zoom=scale;
+    document.body.style.width=designW+'px';
+    document.body.style.height=(vh/scale)+'px';
+    document.body.style.maxWidth=designW+'px';
+    document.body.style.margin='0 auto';
+    // Center horizontally
+    var left=(vw-designW*scale)/2;
+    document.body.style.position='fixed';
+    document.body.style.left=left+'px';
+    document.body.style.top='0';
   } else {
     document.body.style.zoom=1;
+    document.body.style.position='';
+    document.body.style.height='100dvh';
   }
 }
 applyScale();
