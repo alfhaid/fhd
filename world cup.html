@@ -1002,12 +1002,15 @@ const ROUNDS = {
     label: "نصف النهائي",
     matches: [
       {id:301, home:"فرنسا", homeCode:"FRA", away:"إسبانيا", awayCode:"ESP", venue:"AT&T Stadium، أرلينغتون", date:"الثلاثاء 14 يوليو", time:"10:00 مساءً", status:"final", score:{home:0,away:2}},
-      {id:302, home:"إنجلترا", homeCode:"ENG", away:"الأرجنتين", awayCode:"ARG", venue:"Mercedes-Benz Stadium، أتلانتا", date:"الأربعاء 15 يوليو", time:"10:00 مساءً", status:"scheduled"}
+      {id:302, home:"إنجلترا", homeCode:"ENG", away:"الأرجنتين", awayCode:"ARG", venue:"Mercedes-Benz Stadium، أتلانتا", date:"الأربعاء 15 يوليو", time:"10:00 مساءً", status:"final", score:{home:1,away:2}}
     ]
   },
   final: {
-    label: "النهائي",
-    matches: []
+    label: "النهائي + الثالث والرابع",
+    matches: [
+      {id:401, home:"فرنسا", homeCode:"FRA", away:"إنجلترا", awayCode:"ENG", venue:"Hard Rock Stadium، ميامي", date:"الأحد 18 يوليو", time:"12:00 منتصف الليل", status:"scheduled"},
+      {id:402, home:"إسبانيا", homeCode:"ESP", away:"الأرجنتين", awayCode:"ARG", venue:"MetLife Stadium، نيوجيرسي", date:"الأحد 19 يوليو", time:"10:00 مساءً", status:"scheduled"}
+    ]
   }
 };
 
